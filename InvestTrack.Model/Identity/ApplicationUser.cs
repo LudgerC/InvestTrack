@@ -1,8 +1,9 @@
-﻿ using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using InvestTrack.Model.Models;
 using Microsoft.AspNetCore.Identity;
 
 
@@ -14,5 +15,6 @@ namespace InvestTrack.Model.Identity
 
         // Soft Delete (kan gebruiker blokkeren / hide)
         public bool IsDeleted { get; set; } = false;
+        public ICollection<Account> Accounts { get; set; } = new List<Account>();
     }
 }

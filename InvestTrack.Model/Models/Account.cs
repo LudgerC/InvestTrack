@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using InvestTrack.Model.Identity;
 
 namespace InvestTrack.Model.Models
 {
@@ -19,6 +20,9 @@ namespace InvestTrack.Model.Models
         public bool IsDeleted { get; set; } = false;
 
         // Relationships
+        public string UserId { get; set; }              // Foreign key naar ApplicationUser
+        public ApplicationUser? User { get; set; }      // Navigatie naar de gebruiker
+
         public ICollection<Trade> Trades { get; set; } = new List<Trade>();
     }
 }
