@@ -1,0 +1,63 @@
+<Window x:Class="InvestTrack.Desktop.Views.TraderUser.AddTradeWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Nieuwe Trade"
+        Height="360"
+        Width="400"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize"  
+        Background="#F8F9FA">
+
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Invoervelden -->
+        <StackPanel>
+            <!-- Accountkeuze -->
+            <TextBlock Text="Account" FontWeight="Bold" Margin="0,0,0,4"/>
+            <ComboBox x:Name="AccountBox"
+                      Height="28"
+                      Margin="0,0,0,12"
+                      DisplayMemberPath="Name"
+                      SelectedValuePath="AccountId"/>
+
+            <!-- Symboolkeuze -->
+            <TextBlock Text="Symbool" FontWeight="Bold" Margin="0,0,0,4"/>
+            <ComboBox x:Name="SymbolBox"
+                      Height="28"
+                      Margin="0,0,0,12"
+                      DisplayMemberPath="Code"
+                      SelectedValuePath="SymbolId"/>
+
+            <!-- Lots -->
+            <TextBlock Text="Lots" FontWeight="Bold" Margin="0,0,0,4"/>
+            <TextBox x:Name="LotsBox"
+                     Height="28"
+                     Margin="0,0,0,12"/>
+
+            <!-- Winst/Verlies -->
+            <TextBlock Text="Winst/Verlies" FontWeight="Bold" Margin="0,0,0,4"/>
+            <TextBox x:Name="ProfitLossBox"
+                     Height="28"/>
+        </StackPanel>
+
+        <!-- Knoppen onderaan -->
+        <StackPanel Grid.Row="1"
+                    Orientation="Horizontal"
+                    HorizontalAlignment="Right"
+                    Margin="0,20,0,0">
+            <Button Content="Annuleren"
+                    Width="100"
+                    Margin="0,0,8,0"
+                    Click="Cancel_Click"/>
+            <Button Content="Opslaan"
+                    Width="100"
+                    Background="#2E86DE"
+                    Foreground="White"
+                    Click="Save_Click"/>
+        </StackPanel>
+    </Grid>
+</Window>

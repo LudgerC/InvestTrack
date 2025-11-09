@@ -3,6 +3,8 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
+#pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
+
 namespace InvestTrack.Model.Migrations
 {
     /// <inheritdoc />
@@ -53,6 +55,22 @@ namespace InvestTrack.Model.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Symbols",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Code = table.Column<string>(type: "TEXT", nullable: false),
+                    DisplayName = table.Column<string>(type: "TEXT", nullable: true),
+                    Category = table.Column<string>(type: "TEXT", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Symbols", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "AspNetRoleClaims",
                 columns: table => new
                 {
@@ -79,6 +97,7 @@ namespace InvestTrack.Model.Migrations
                 {
                     AccountId = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
+                    Name = table.Column<string>(type: "TEXT", nullable: false),
                     AccountName = table.Column<string>(type: "TEXT", nullable: false),
                     Balance = table.Column<decimal>(type: "TEXT", nullable: false),
                     Currency = table.Column<string>(type: "TEXT", nullable: false),
@@ -187,7 +206,7 @@ namespace InvestTrack.Model.Migrations
                 {
                     TradeId = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    Symbol = table.Column<string>(type: "TEXT", nullable: false),
+                    SymbolId = table.Column<int>(type: "INTEGER", nullable: false),
                     EntryPrice = table.Column<decimal>(type: "TEXT", nullable: false),
                     ExitPrice = table.Column<decimal>(type: "TEXT", nullable: false),
                     Lots = table.Column<decimal>(type: "TEXT", nullable: false),
@@ -200,6 +219,35 @@ namespace InvestTrack.Model.Migrations
                     table.PrimaryKey("PK_Trades", x => x.TradeId);
                     table.ForeignKey(
                         name: "FK_Trades_Accounts_AccountId",
+                        column: x => x.AccountId,
+                        principalTable: "Accounts",
+                        principalColumn: "AccountId",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Trades_Symbols_SymbolId",
+                        column: x => x.SymbolId,
+                        principalTable: "Symbols",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Transactions",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    AccountId = table.Column<int>(type: "INTEGER", nullable: false),
+                    Amount = table.Column<decimal>(type: "TEXT", nullable: false),
+                    Type = table.Column<string>(type: "TEXT", nullable: false),
+                    Note = table.Column<string>(type: "TEXT", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Transactions", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Transactions_Accounts_AccountId",
                         column: x => x.AccountId,
                         principalTable: "Accounts",
                         principalColumn: "AccountId",
@@ -225,6 +273,30 @@ namespace InvestTrack.Model.Migrations
                         principalTable: "Trades",
                         principalColumn: "TradeId",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.InsertData(
+                table: "Symbols",
+                columns: new[] { "Id", "Category", "Code", "CreatedAt", "DisplayName" },
+                values: new object[,]
+                {
+                    { 1, "Metals", "XAUUSD", new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Goud" },
+                    { 2, "Metals", "XAGUSD", new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Zilver" },
+                    { 3, "Forex", "EURUSD", new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Euro / Dollar" },
+                    { 4, "Forex", "GBPUSD", new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Pond / Dollar" },
+                    { 5, "Forex", "USDJPY", new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Dollar / Yen" },
+                    { 6, "Forex", "USDCHF", new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Dollar / Zwitserse Frank" },
+                    { 7, "Forex", "AUDUSD", new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Aussie / Dollar" },
+                    { 8, "Forex", "USDCAD", new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Dollar / Canadese Dollar" },
+                    { 9, "Forex", "NZDUSD", new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Kiwi / Dollar" },
+                    { 10, "Crypto", "BTCUSD", new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Bitcoin / Dollar" },
+                    { 11, "Index", "US30", new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Dow Jones 30" },
+                    { 12, "Index", "US100", new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "NASDAQ 100" },
+                    { 13, "Index", "US500", new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "S&P 500" },
+                    { 14, "Index", "UK100", new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "FTSE 100" },
+                    { 15, "Index", "STOXX50", new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Euro Stoxx 50" },
+                    { 16, "Index", "JP225", new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Nikkei 225" },
+                    { 17, "Index", "HK50", new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Hang Seng 50" }
                 });
 
             migrationBuilder.CreateIndex(
@@ -275,8 +347,24 @@ namespace InvestTrack.Model.Migrations
                 column: "TradeId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Symbols_Code",
+                table: "Symbols",
+                column: "Code",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Trades_AccountId",
                 table: "Trades",
+                column: "AccountId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Trades_SymbolId",
+                table: "Trades",
+                column: "SymbolId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Transactions_AccountId",
+                table: "Transactions",
                 column: "AccountId");
         }
 
@@ -302,6 +390,9 @@ namespace InvestTrack.Model.Migrations
                 name: "FavoriteTrades");
 
             migrationBuilder.DropTable(
+                name: "Transactions");
+
+            migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
@@ -309,6 +400,9 @@ namespace InvestTrack.Model.Migrations
 
             migrationBuilder.DropTable(
                 name: "Accounts");
+
+            migrationBuilder.DropTable(
+                name: "Symbols");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");

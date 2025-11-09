@@ -1,6 +1,8 @@
 ﻿using System.Windows;
 using Microsoft.AspNetCore.Identity;
 using InvestTrack.Model.Identity;
+using InvestTrack.Desktop.Views.Admin;
+
 
 namespace InvestTrack.Desktop.Views.Auth
 {
@@ -40,12 +42,13 @@ namespace InvestTrack.Desktop.Views.Auth
 
             if (roles.Contains("Trader"))
             {
-                var dashboard = new Views.TraderUser.TraderDashboard();
+                var dashboard = new Views.TraderUser.TraderDashboard(user.Id);
                 dashboard.Show();
             }
             else if (roles.Contains("Admin"))
             {
-                MessageBox.Show("Admin login (later admin UI toevoegen).");
+                var adminDashboard = new Views.Admin.AdminDashboard();
+                adminDashboard.Show();
             }
 
             Close();

@@ -16,5 +16,7 @@ namespace InvestTrack.Model.Identity
         // Soft Delete (kan gebruiker blokkeren / hide)
         public bool IsDeleted { get; set; } = false;
         public ICollection<Account> Accounts { get; set; } = new List<Account>();
+
+
     }
 }

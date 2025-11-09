@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace InvestTrack.Model.Migrations
 {
     [DbContext(typeof(InvestTrackDbContext))]
-    [Migration("20251109023430_SQLiteInit")]
+    [Migration("20251109210219_SQLiteInit")]
     partial class SQLiteInit
     {
         /// <inheritdoc />
@@ -111,6 +111,10 @@ namespace InvestTrack.Model.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("INTEGER");
 
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("UserId")
                         .IsRequired()
                         .HasColumnType("TEXT");
@@ -145,6 +149,171 @@ namespace InvestTrack.Model.Migrations
                     b.ToTable("FavoriteTrades");
                 });
 
+            modelBuilder.Entity("InvestTrack.Model.Models.Symbol", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Category")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("DisplayName")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Code")
+                        .IsUnique();
+
+                    b.ToTable("Symbols");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Category = "Metals",
+                            Code = "XAUUSD",
+                            CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            DisplayName = "Goud"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Category = "Metals",
+                            Code = "XAGUSD",
+                            CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            DisplayName = "Zilver"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Category = "Forex",
+                            Code = "EURUSD",
+                            CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            DisplayName = "Euro / Dollar"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Category = "Forex",
+                            Code = "GBPUSD",
+                            CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            DisplayName = "Pond / Dollar"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Category = "Forex",
+                            Code = "USDJPY",
+                            CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            DisplayName = "Dollar / Yen"
+                        },
+                        new
+                        {
+                            Id = 6,
+                            Category = "Forex",
+                            Code = "USDCHF",
+                            CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            DisplayName = "Dollar / Zwitserse Frank"
+                        },
+                        new
+                        {
+                            Id = 7,
+                            Category = "Forex",
+                            Code = "AUDUSD",
+                            CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            DisplayName = "Aussie / Dollar"
+                        },
+                        new
+                        {
+                            Id = 8,
+                            Category = "Forex",
+                            Code = "USDCAD",
+                            CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            DisplayName = "Dollar / Canadese Dollar"
+                        },
+                        new
+                        {
+                            Id = 9,
+                            Category = "Forex",
+                            Code = "NZDUSD",
+                            CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            DisplayName = "Kiwi / Dollar"
+                        },
+                        new
+                        {
+                            Id = 10,
+                            Category = "Crypto",
+                            Code = "BTCUSD",
+                            CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            DisplayName = "Bitcoin / Dollar"
+                        },
+                        new
+                        {
+                            Id = 11,
+                            Category = "Index",
+                            Code = "US30",
+                            CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            DisplayName = "Dow Jones 30"
+                        },
+                        new
+                        {
+                            Id = 12,
+                            Category = "Index",
+                            Code = "US100",
+                            CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            DisplayName = "NASDAQ 100"
+                        },
+                        new
+                        {
+                            Id = 13,
+                            Category = "Index",
+                            Code = "US500",
+                            CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            DisplayName = "S&P 500"
+                        },
+                        new
+                        {
+                            Id = 14,
+                            Category = "Index",
+                            Code = "UK100",
+                            CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            DisplayName = "FTSE 100"
+                        },
+                        new
+                        {
+                            Id = 15,
+                            Category = "Index",
+                            Code = "STOXX50",
+                            CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            DisplayName = "Euro Stoxx 50"
+                        },
+                        new
+                        {
+                            Id = 16,
+                            Category = "Index",
+                            Code = "JP225",
+                            CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            DisplayName = "Nikkei 225"
+                        },
+                        new
+                        {
+                            Id = 17,
+                            Category = "Index",
+                            Code = "HK50",
+                            CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            DisplayName = "Hang Seng 50"
+                        });
+                });
+
             modelBuilder.Entity("InvestTrack.Model.Models.Trade", b =>
                 {
                     b.Property<int>("TradeId")
@@ -169,15 +338,45 @@ namespace InvestTrack.Model.Migrations
                     b.Property<decimal>("ProfitLoss")
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("Symbol")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
+                    b.Property<int>("SymbolId")
+                        .HasColumnType("INTEGER");
 
                     b.HasKey("TradeId");
 
                     b.HasIndex("AccountId");
 
+                    b.HasIndex("SymbolId");
+
                     b.ToTable("Trades");
+                });
+
+            modelBuilder.Entity("InvestTrack.Model.Models.Transaction", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("AccountId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Note")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AccountId");
+
+                    b.ToTable("Transactions");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -334,6 +533,25 @@ namespace InvestTrack.Model.Migrations
                 {
                     b.HasOne("InvestTrack.Model.Models.Account", "Account")
                         .WithMany("Trades")
+                        .HasForeignKey("AccountId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("InvestTrack.Model.Models.Symbol", "Symbol")
+                        .WithMany()
+                        .HasForeignKey("SymbolId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Account");
+
+                    b.Navigation("Symbol");
+                });
+
+            modelBuilder.Entity("InvestTrack.Model.Models.Transaction", b =>
+                {
+                    b.HasOne("InvestTrack.Model.Models.Account", "Account")
+                        .WithMany()
                         .HasForeignKey("AccountId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();

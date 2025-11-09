@@ -1,0 +1,174 @@
+<Window x:Class="InvestTrack.Desktop.Views.Admin.AdminDashboard"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="InvestTrack - Admin Dashboard"
+        Height="600"
+        Width="950"
+        WindowStartupLocation="CenterScreen"
+        Background="#F4F6F8">
+
+    <DockPanel>
+
+        <!-- HEADER -->
+        <Border DockPanel.Dock="Top" Background="#2E86DE" Padding="10">
+            <DockPanel>
+                <TextBlock Text="InvestTrack - Admin Dashboard"
+                           Foreground="White"
+                           FontSize="20"
+                           FontWeight="Bold"
+                           VerticalAlignment="Center"
+                           DockPanel.Dock="Left"/>
+
+                <Button Content="Afmelden"
+                        Width="100"
+                        Height="28"
+                        DockPanel.Dock="Right"
+                        Background="White"
+                        Foreground="#2E86DE"
+                        FontWeight="Bold"
+                        Cursor="Hand"
+                        Click="Logout_Click"/>
+            </DockPanel>
+        </Border>
+
+        <!-- MAIN CONTENT -->
+        <TabControl x:Name="MainTabs" Margin="12">
+
+            <!-- === GEBRUIKERS === -->
+            <TabItem Header="Gebruikers">
+                <Grid Margin="8">
+                    <DataGrid x:Name="UsersGrid"
+                              AutoGenerateColumns="False"
+                              IsReadOnly="True"
+                              SelectionMode="Single"
+                              Margin="0,0,0,56">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Naam" Binding="{Binding UserName}" Width="2*"/>
+                            <DataGridTextColumn Header="E-mail" Binding="{Binding Email}" Width="2*"/>
+                            <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="3*"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+
+                    <StackPanel Orientation="Horizontal"
+                                HorizontalAlignment="Right"
+                                VerticalAlignment="Bottom"
+                                Margin="0,0,10,10">
+                        <Button Content="Bekijk accounts"
+                                Width="150"
+                                Background="#2E86DE"
+                                Foreground="White"
+                                Click="ViewAccounts_Click"
+                                Margin="0,0,8,0"/>
+                        <Button Content="Verwijder gebruiker"
+                                Width="150"
+                                Background="#dc3545"
+                                Foreground="White"
+                                Click="DeleteUser_Click"/>
+                    </StackPanel>
+                </Grid>
+            </TabItem>
+
+            <!-- === ACCOUNTS === -->
+            <TabItem Header="Accounts">
+                <Grid Margin="8">
+                    <DataGrid x:Name="AccountsGrid"
+                              AutoGenerateColumns="False"
+                              IsReadOnly="True"
+                              SelectionMode="Single"
+                              Margin="0,0,0,56">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Accountnaam" Binding="{Binding Name}" Width="2*"/>
+                            <DataGridTextColumn Header="Gebruiker ID" Binding="{Binding UserId}" Width="2*"/>
+                            <DataGridTextColumn Header="E-mail" Binding="{Binding Email}" Width="2*"/>
+                            <DataGridTextColumn Header="Valuta" Binding="{Binding Currency}" Width="*"/>
+                            <DataGridTextColumn Header="Saldo" Binding="{Binding Balance, StringFormat={}{0:N2}}" Width="*"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+
+                    <StackPanel Orientation="Horizontal"
+                                HorizontalAlignment="Right"
+                                VerticalAlignment="Bottom"
+                                Margin="0,0,10,10">
+                        <Button Content="Bekijk trades"
+                                Width="150"
+                                Background="#2E86DE"
+                                Foreground="White"
+                                Click="ViewTrades_Click"
+                                Margin="0,0,8,0"/>
+                        <Button Content="Verwijder account"
+                                Width="150"
+                                Background="#dc3545"
+                                Foreground="White"
+                                Click="DeleteAccount_Click"/>
+                    </StackPanel>
+                </Grid>
+            </TabItem>
+
+            <!-- === TRADES === -->
+            <TabItem Header="Trades">
+                <Grid Margin="8">
+                    <DataGrid x:Name="TradesGrid"
+                              AutoGenerateColumns="False"
+                              IsReadOnly="True"
+                              SelectionMode="Single"
+                              Margin="0,0,0,56">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Symbool" Binding="{Binding Symbol.Code}" Width="*"/>
+                            <DataGridTextColumn Header="Naam" Binding="{Binding Symbol.DisplayName}" Width="2*"/>
+                            <DataGridTextColumn Header="Lots" Binding="{Binding Lots}" Width="*"/>
+                            <DataGridTextColumn Header="Winst/Verlies" Binding="{Binding ProfitLoss, StringFormat={}{0:N2}}" Width="*"/>
+                            <DataGridTextColumn Header="Account" Binding="{Binding Account.Name}" Width="2*"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+
+                    <StackPanel Orientation="Horizontal"
+                                HorizontalAlignment="Right"
+                                VerticalAlignment="Bottom"
+                                Margin="0,0,10,10">
+                        <Button Content="Verwijder trade"
+                                Width="150"
+                                Background="#dc3545"
+                                Foreground="White"
+                                Click="DeleteTrade_Click"/>
+                    </StackPanel>
+                </Grid>
+            </TabItem>
+
+            <!-- === SYMBOLEN === -->
+            <TabItem Header="Symbolen">
+                <Grid Margin="8">
+                    <DataGrid x:Name="SymbolsGrid"
+                              AutoGenerateColumns="False"
+                              IsReadOnly="True"
+                              SelectionMode="Single"
+                              Margin="0,0,0,56">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Code" Binding="{Binding Code}" Width="2*"/>
+                            <DataGridTextColumn Header="Naam" Binding="{Binding DisplayName}" Width="3*"/>
+                            <DataGridTextColumn Header="Categorie" Binding="{Binding Category}" Width="2*"/>
+                            <DataGridTextColumn Header="Aangemaakt" Binding="{Binding CreatedAt, StringFormat={}{0:yyyy-MM-dd}}" Width="*"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+
+                    <StackPanel Orientation="Horizontal"
+                                HorizontalAlignment="Right"
+                                VerticalAlignment="Bottom"
+                                Margin="0,0,10,10">
+                        <Button Content="Nieuw symbool"
+                                Width="150"
+                                Background="#28a745"
+                                Foreground="White"
+                                Click="AddSymbol_Click"
+                                Margin="0,0,8,0"/>
+                        <Button Content="Verwijder symbool"
+                                Width="150"
+                                Background="#dc3545"
+                                Foreground="White"
+                                Click="DeleteSymbol_Click"/>
+                    </StackPanel>
+                </Grid>
+            </TabItem>
+
+        </TabControl>
+    </DockPanel>
+</Window>

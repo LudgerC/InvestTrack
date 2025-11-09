@@ -10,7 +10,9 @@ namespace InvestTrack.Model.Models
     {
         public int TradeId { get; set; }
 
-        public string Symbol { get; set; } = string.Empty;
+        // Relatie naar Symbol
+        public int SymbolId { get; set; }        // de foreign key
+        public Symbol Symbol { get; set; } = null!;  // de navigatieproperty
         public decimal EntryPrice { get; set; }
         public decimal ExitPrice { get; set; }
         public decimal Lots { get; set; }

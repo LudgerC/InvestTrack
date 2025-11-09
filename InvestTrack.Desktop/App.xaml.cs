@@ -25,11 +25,11 @@ namespace InvestTrack.Desktop
 
             string connectionString = config["ConnectionStrings:DefaultConnection"] ?? "Data Source=investtrack.db";
 
-            // === Database ===
+            // === Database setup ===
             services.AddDbContext<InvestTrackDbContext>(options =>
                 options.UseSqlite(connectionString));
 
-            // === Logging (voor RoleManager) ===
+            // === Logging (nodig voor Identity) ===
             services.AddLogging();
 
             // === Identity setup ===
@@ -45,11 +45,18 @@ namespace InvestTrack.Desktop
 
             ServiceProvider = services.BuildServiceProvider();
 
-            // === Roles + Admin seeden ===
-            using (var scope = ServiceProvider.CreateScope())
+            // === Database migreren vóór seeding ===
+            using (var migrateScope = ServiceProvider.CreateScope())
             {
-                var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-                var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+                var dbContext = migrateScope.ServiceProvider.GetRequiredService<InvestTrackDbContext>();
+                await dbContext.Database.MigrateAsync(); // ✅ zorgt dat tabellen bestaan
+            }
+
+            // === Roles + Default Users seeden ===
+            using (var seedScope = ServiceProvider.CreateScope())
+            {
+                var roleManager = seedScope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+                var userManager = seedScope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
 
                 string[] roles = { "Admin", "Trader" };
                 foreach (var role in roles)
@@ -58,6 +65,7 @@ namespace InvestTrack.Desktop
                         await roleManager.CreateAsync(new IdentityRole(role));
                 }
 
+                // --- Admin user ---
                 var adminEmail = "admin@investtrack.local";
                 var admin = await userManager.FindByEmailAsync(adminEmail);
                 if (admin == null)
@@ -72,17 +80,31 @@ namespace InvestTrack.Desktop
                     await userManager.CreateAsync(admin, "Admin#12345");
                     await userManager.AddToRoleAsync(admin, "Admin");
                 }
+
+                // --- Trader user ---
+                var traderEmail = "trader@investtrack.local";
+                var trader = await userManager.FindByEmailAsync(traderEmail);
+                if (trader == null)
+                {
+                    trader = new ApplicationUser
+                    {
+                        UserName = traderEmail,
+                        Email = traderEmail,
+                        FullName = "Test Trader"
+                    };
+
+                    await userManager.CreateAsync(trader, "Trader#12345");
+                    await userManager.AddToRoleAsync(trader, "Trader");
+                }
             }
 
-            // === Start Login venster ===
-            using (var scope = ServiceProvider.CreateScope())
-            {
-                var signInManager = scope.ServiceProvider.GetRequiredService<SignInManager<ApplicationUser>>();
-                var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+            // === Start Login venster (NIET in using!) ===
+            var rootScope = ServiceProvider.CreateScope();
+            var signInManager = rootScope.ServiceProvider.GetRequiredService<SignInManager<ApplicationUser>>();
+            var globalUserManager = rootScope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
 
-                var login = new Views.Auth.LoginWindow(signInManager, userManager);
-                login.Show();
-            }
+            var login = new Views.Auth.LoginWindow(signInManager, globalUserManager);
+            login.Show();
 
             base.OnStartup(e);
         }

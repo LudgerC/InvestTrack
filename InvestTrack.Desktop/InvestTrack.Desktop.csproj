@@ -49,8 +49,4 @@
     <ProjectReference Include="..\InvestTrack.Model\InvestTrack.Model.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Views\Admin\" />
-  </ItemGroup>
-
 </Project>

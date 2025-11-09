@@ -2,72 +2,232 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="InvestTrack - Trader Dashboard"
-        Height="550"
-        Width="820"
+        Height="600"
+        Width="900"
         WindowStartupLocation="CenterScreen"
         Background="#F4F6F8">
 
     <DockPanel>
-        <!-- Header -->
-        <Border DockPanel.Dock="Top"
-                Background="#2E86DE"
-                Padding="10">
-            <TextBlock Text="InvestTrack - Trader Dashboard"
-                       Foreground="White"
-                       FontSize="20"
-                       FontWeight="Bold"
-                       VerticalAlignment="Center"/>
+        <!-- HEADER -->
+        <Border DockPanel.Dock="Top" Background="#2E86DE" Padding="10">
+            <DockPanel>
+                <TextBlock Text="InvestTrack - Trader Dashboard"
+                           Foreground="White"
+                           FontSize="20"
+                           FontWeight="Bold"
+                           VerticalAlignment="Center"
+                           DockPanel.Dock="Left"/>
+
+                <Button Content="Afmelden"
+                        Width="100"
+                        Height="28"
+                        DockPanel.Dock="Right"
+                        Background="White"
+                        Foreground="#2E86DE"
+                        FontWeight="Bold"
+                        Cursor="Hand"
+                        Click="Logout_Click"/>
+            </DockPanel>
         </Border>
 
-        <!-- Tabs -->
+        <!-- MAIN TABS -->
         <TabControl x:Name="MainTabs" Margin="12">
-            <!-- Accounts Tab -->
+
+            <!-- === ACCOUNTS TAB === -->
             <TabItem Header="Accounts">
                 <Grid>
                     <DataGrid x:Name="AccountsGrid"
                               AutoGenerateColumns="False"
                               IsReadOnly="True"
-                              Margin="8">
+                              Margin="8,8,8,56">
                         <DataGrid.Columns>
-                            <DataGridTextColumn Header="Naam" Binding="{Binding Name}" Width="*" />
+                            <DataGridTextColumn Header="Naam" Binding="{Binding Name}" Width="2*" />
                             <DataGridTextColumn Header="Valuta" Binding="{Binding Currency}" Width="*" />
-                            <DataGridTextColumn Header="Saldo" Binding="{Binding Balance}" Width="*" />
+                            <DataGridTextColumn Header="Saldo" Width="*">
+                                <DataGridTextColumn.Binding>
+                                    <Binding Path="Balance" StringFormat="{}{0:N2}" />
+                                </DataGridTextColumn.Binding>
+                            </DataGridTextColumn>
                         </DataGrid.Columns>
                     </DataGrid>
 
-                    <Button Content="Account toevoegen"
-                            Width="160" Height="32"
-                            HorizontalAlignment="Right"
-                            VerticalAlignment="Bottom"
-                            Margin="0,0,10,10"
-                            Background="#2E86DE"
-                            Foreground="White"
-                            Click="AddAccount_Click"/>
+                    <StackPanel Orientation="Horizontal"
+                                HorizontalAlignment="Right"
+                                VerticalAlignment="Bottom"
+                                Margin="0,0,10,10">
+                        <StackPanel.Resources>
+                            <Style TargetType="Button">
+                                <Setter Property="Margin" Value="0,0,8,0"/>
+                            </Style>
+                        </StackPanel.Resources>
+
+                        <Button Content="Deposit" Width="100" Background="#28a745" Foreground="White" Click="Deposit_Click"/>
+                        <Button Content="Withdraw" Width="100" Background="#dc3545" Foreground="White" Click="Withdraw_Click"/>
+                        <Button Content="Account toevoegen" Width="160" Background="#2E86DE" Foreground="White" Click="AddAccount_Click" Margin="0"/>
+                    </StackPanel>
                 </Grid>
             </TabItem>
 
-            <!-- Trades Tab -->
+
+
+            <!-- === TRADES TAB === -->
             <TabItem Header="Trades">
-                <Grid>
+                <Grid Margin="8">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                        <TextBlock Text="Account:" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                        <ComboBox x:Name="AccountFilter"
+                                  Width="200"
+                                  SelectionChanged="AccountFilter_SelectionChanged"
+                                  DisplayMemberPath="Name"
+                                  SelectedValuePath="AccountId"/>
+                    </StackPanel>
+
                     <DataGrid x:Name="TradesGrid"
+                              Grid.Row="1"
                               AutoGenerateColumns="False"
                               IsReadOnly="True"
-                              Margin="8">
+                              Margin="0,0,0,8"
+                              MouseDoubleClick="TradesGrid_MouseDoubleClick">
                         <DataGrid.Columns>
-                            <DataGridTextColumn Header="Instrument" Binding="{Binding Symbol}" Width="*" />
-                            <DataGridTextColumn Header="Volume" Binding="{Binding Volume}" Width="*" />
-                            <DataGridTextColumn Header="Winst/Verlies" Binding="{Binding Profit}" Width="*" />
+                            <DataGridTextColumn Header="Symbool" Binding="{Binding SymbolCode}" Width="*"/>
+                            <DataGridTextColumn Header="Naam" Binding="{Binding SymbolName}" Width="2*"/>
+                            <DataGridTextColumn Header="Lots" Binding="{Binding Lots}" Width="*"/>
+                            <DataGridTextColumn Header="Winst/Verlies" Binding="{Binding ProfitLoss, StringFormat={}{0:N2}}" Width="*"/>
+                            <DataGridTextColumn Header="Account" Binding="{Binding AccountName}" Width="2*"/>
+
+                            <!-- ? FAVORIET TEKSTKOLOM -->
+                            <DataGridTemplateColumn Header="Favoriet" Width="80">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Button Background="Transparent"
+                                                BorderThickness="0"
+                                                Padding="0"
+                                                Click="FavoriteButton_Click">
+                                            <TextBlock FontSize="16"
+                                                       FontWeight="Bold"
+                                                       HorizontalAlignment="Center"
+                                                       VerticalAlignment="Center">
+                                                <TextBlock.Style>
+                                                    <Style TargetType="TextBlock">
+                                                        <Setter Property="Text" Value=""/>
+                                                        <Setter Property="Foreground" Value="Transparent"/>
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding IsFavorite}" Value="True">
+                                                                <Setter Property="Text" Value="X"/>
+                                                                <Setter Property="Foreground" Value="Gold"/>
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </TextBlock.Style>
+                                            </TextBlock>
+                                        </Button>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+
+                        </DataGrid.Columns>
+                    </DataGrid>
+
+                    <Button Content="Nieuwe trade"
+                            Grid.Row="2"
+                            Width="150"
+                            Height="32"
+                            HorizontalAlignment="Right"
+                            Background="#2E86DE"
+                            Foreground="White"
+                            Click="AddTrade_Click"/>
+                </Grid>
+            </TabItem>
+
+
+
+            <!-- === FAVORIETEN TAB === -->
+            <TabItem Header="Favorieten">
+                <Grid Margin="8">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                        <TextBlock Text="Account:" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                        <ComboBox x:Name="FavoritesAccountFilter"
+                                  Width="200"
+                                  SelectionChanged="FavoritesAccountFilter_SelectionChanged"
+                                  DisplayMemberPath="Name"
+                                  SelectedValuePath="AccountId"/>
+                    </StackPanel>
+
+                    <DataGrid x:Name="FavoritesGrid"
+                              Grid.Row="1"
+                              AutoGenerateColumns="False"
+                              IsReadOnly="True"
+                              Margin="0"
+                              CanUserAddRows="False">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Symbool" Binding="{Binding SymbolCode}" Width="*"/>
+                            <DataGridTextColumn Header="Naam" Binding="{Binding SymbolName}" Width="2*"/>
+                            <DataGridTextColumn Header="Lots" Binding="{Binding Lots}" Width="*"/>
+                            <DataGridTextColumn Header="Winst/Verlies" Binding="{Binding ProfitLoss, StringFormat={}{0:N2}}" Width="*"/>
+                            <DataGridTextColumn Header="Account" Binding="{Binding AccountName}" Width="2*"/>
+
+                            <!-- ? FAVORIETEN ALTIJD GOUDEN X -->
+                            <DataGridTemplateColumn Header="Favoriet" Width="80">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="X"
+                                                   FontSize="16"
+                                                   FontWeight="Bold"
+                                                   Foreground="Gold"
+                                                   HorizontalAlignment="Center"
+                                                   VerticalAlignment="Center"/>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+
                         </DataGrid.Columns>
                     </DataGrid>
                 </Grid>
             </TabItem>
 
-            <!-- Favorieten Tab -->
-            <TabItem Header="Favorieten">
-                <ListBox x:Name="FavoritesList"
-                         Margin="8"
-                         DisplayMemberPath="Symbol"/>
+
+
+            <!-- === SYMBOLEN TAB === -->
+            <TabItem Header="Symbolen">
+                <Grid Margin="8">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                        <TextBlock Text="Categorie:" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                        <ComboBox x:Name="CategoryFilter"
+                                  Width="150"
+                                  SelectionChanged="CategoryFilter_SelectionChanged"/>
+                    </StackPanel>
+
+                    <DataGrid x:Name="SymbolsGrid"
+                              Grid.Row="1"
+                              AutoGenerateColumns="False"
+                              IsReadOnly="True"
+                              Margin="0"
+                              CanUserAddRows="False">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Code" Binding="{Binding Code}" Width="2*"/>
+                            <DataGridTextColumn Header="Naam" Binding="{Binding DisplayName}" Width="3*"/>
+                            <DataGridTextColumn Header="Categorie" Binding="{Binding Category}" Width="2*"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
             </TabItem>
+
         </TabControl>
     </DockPanel>
 </Window>
