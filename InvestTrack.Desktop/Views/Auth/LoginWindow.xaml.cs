@@ -1,11 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
+﻿using System.Windows;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.DependencyInjection;
 using InvestTrack.Model.Identity;
 
 namespace InvestTrack.Desktop.Views.Auth
@@ -15,18 +9,17 @@ namespace InvestTrack.Desktop.Views.Auth
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly UserManager<ApplicationUser> _userManager;
 
-        // Parameterloze constructor (haalt services uit App.ServiceProvider)
-        public LoginWindow()
+        public LoginWindow(SignInManager<ApplicationUser> signInManager, UserManager<ApplicationUser> userManager)
         {
             InitializeComponent();
-            _signInManager = App.ServiceProvider.GetRequiredService<SignInManager<ApplicationUser>>();
-            _userManager = App.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+            _signInManager = signInManager;
+            _userManager = userManager;
         }
 
         private async void Login_Click(object sender, RoutedEventArgs e)
         {
             var email = EmailBox.Text?.Trim() ?? "";
-            var pwd = PasswordBox.Password ?? "";
+            var password = PasswordBox.Password ?? "";
 
             var user = await _userManager.FindByEmailAsync(email);
             if (user == null)
@@ -35,21 +28,32 @@ namespace InvestTrack.Desktop.Views.Auth
                 return;
             }
 
-            var result = await _signInManager.PasswordSignInAsync(user.UserName!, pwd, isPersistent: false, lockoutOnFailure: false);
-            if (result.Succeeded)
+            var valid = await _userManager.CheckPasswordAsync(user, password);
+            if (!valid)
             {
-                DialogResult = true;
-                Close();
+                ErrorText.Text = "Fout wachtwoord.";
+                return;
             }
-            else
+
+            // check rol
+            var roles = await _userManager.GetRolesAsync(user);
+
+            if (roles.Contains("Trader"))
             {
-                ErrorText.Text = "Login mislukt.";
+                var dashboard = new Views.TraderUser.TraderDashboard();
+                dashboard.Show();
             }
+            else if (roles.Contains("Admin"))
+            {
+                MessageBox.Show("Admin login (later admin UI toevoegen).");
+            }
+
+            Close();
         }
 
         private void OpenRegister_Click(object sender, RoutedEventArgs e)
         {
-            var reg = new RegisterWindow();
+            var reg = new RegisterWindow(_userManager);
             reg.Owner = this;
             reg.ShowDialog();
         }

@@ -12,6 +12,9 @@ namespace InvestTrack.Model.Models
     {
         public int AccountId { get; set; }
 
+        // Naam van de account (bijv. "Main Trading Account")
+        public string Name { get; set; } = string.Empty;
+
         public string AccountName { get; set; } = string.Empty;
         public decimal Balance { get; set; }
         public string Currency { get; set; } = "USD";

@@ -1,14 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using InvestTrack.Model.Data;
+﻿using System.IO;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Configuration;
-using System.IO;
+using InvestTrack.Model.Data;
 
 namespace InvestTrack.Model.Factories
 {
@@ -16,16 +10,16 @@ namespace InvestTrack.Model.Factories
     {
         public InvestTrackDbContext CreateDbContext(string[] args)
         {
-            // Laad de user secrets / config
             var config = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
-                .AddUserSecrets<InvestTrackDbContextFactory>()
+                .AddJsonFile("appsettings.json", optional: true)
                 .Build();
 
+            var cs = config.GetConnectionString("DefaultConnection")
+                     ?? "Data Source=investtrack.db";
+
             var optionsBuilder = new DbContextOptionsBuilder<InvestTrackDbContext>();
-            optionsBuilder.UseSqlServer(
-                config.GetConnectionString("DefaultConnection") ??
-                "Server=(localdb)\\mssqllocaldb;Database=InvestTrackDB;Trusted_Connection=True;MultipleActiveResultSets=true");
+            optionsBuilder.UseSqlite(cs);
 
             return new InvestTrackDbContext(optionsBuilder.Options);
         }
