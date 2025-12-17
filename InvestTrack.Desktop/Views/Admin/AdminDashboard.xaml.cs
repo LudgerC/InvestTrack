@@ -1,12 +1,16 @@
 ﻿using System;
 using System.Linq;
 using System.Windows;
+using System.Windows.Controls;
+using InvestTrack.Desktop.Views.Admin;
 using InvestTrack.Model.Data;
-using InvestTrack.Model.Models;
 using InvestTrack.Model.Identity;
+using InvestTrack.Model.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using InvestTrack.Desktop.Views.Admin;
+using Microsoft.AspNetCore.Identity;
+using System.Threading.Tasks;
+
 
 
 namespace InvestTrack.Desktop.Views.Admin
@@ -19,6 +23,10 @@ namespace InvestTrack.Desktop.Views.Admin
         {
             InitializeComponent();
             _db = App.ServiceProvider.GetRequiredService<InvestTrackDbContext>();
+
+            _userManager = App.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+            _roleManager = App.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+
             LoadAllData();
         }
 
@@ -271,5 +279,71 @@ namespace InvestTrack.Desktop.Views.Admin
                 LoadSymbols();
             }
         }
+
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
+
+        private async void CreateUser_Click(object sender, RoutedEventArgs e)
+        {
+            CreateStatus.Text = "";
+
+            var username = NewUserNameBox.Text?.Trim();
+            var email = NewEmailBox.Text?.Trim();
+            var password = NewPasswordBox.Password;
+
+            var roleItem = RoleComboBox.SelectedItem as ComboBoxItem;
+            var role = roleItem?.Content?.ToString() ?? "Trader";
+
+            var resultText = await CreateUserWithRoleAsync(username, email, password, role);
+
+            CreateStatus.Foreground = resultText.StartsWith("OK")
+                ? System.Windows.Media.Brushes.Green
+                : System.Windows.Media.Brushes.Red;
+
+            CreateStatus.Text = resultText;
+
+            if (resultText.StartsWith("OK"))
+                LoadUsers();
+        }
+
+        private async Task<string> CreateUserWithRoleAsync(string? username, string? email, string? password, string role)
+        {
+            if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))
+                return "Vul e-mail en wachtwoord in.";
+
+            email = email.Trim();
+            username = string.IsNullOrWhiteSpace(username) ? email : username.Trim();
+
+            // garantir que a role existe
+            if (!await _roleManager.RoleExistsAsync(role))
+            {
+                var roleCreate = await _roleManager.CreateAsync(new IdentityRole(role));
+                if (!roleCreate.Succeeded)
+                    return "Kon rol niet aanmaken: " + string.Join("; ", roleCreate.Errors.Select(e => e.Description));
+            }
+
+            // evitar duplicados
+            var existing = await _userManager.FindByEmailAsync(email);
+            if (existing != null)
+                return "E-mailadres is al in gebruik.";
+
+            var user = new ApplicationUser
+            {
+                UserName = email,   // igual ao teu RegisterWindow
+                Email = email,
+                FullName = username // se quiseres, ou mete outro campo para nome
+            };
+
+            var result = await _userManager.CreateAsync(user, password);
+            if (!result.Succeeded)
+                return string.Join("\n", result.Errors.Select(e => e.Description));
+
+            var roleResult = await _userManager.AddToRoleAsync(user, role);
+            if (!roleResult.Succeeded)
+                return "User aangemaakt, maar rol faalde: " + string.Join("; ", roleResult.Errors.Select(e => e.Description));
+
+            return $"OK: {role} aangemaakt ({email})";
+        }
+
     }
 }

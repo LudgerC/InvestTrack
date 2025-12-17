@@ -1,0 +1,27 @@
+﻿@model IEnumerable<InvestTrack.Model.Models.Symbol>
+
+@{
+    ViewData["Title"] = "Symbols";
+}
+
+<h2 class="mb-3">Symbols</h2>
+
+<table class="table table-striped table-hover">
+    <thead class="table-dark">
+        <tr>
+            <th>Code</th>
+            <th>Naam</th>
+            <th>Categorie</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var s in Model)
+        {
+            <tr>
+                <td>@s.Code</td>
+                <td>@s.DisplayName</td>
+                <td>@s.Category</td>
+            </tr>
+        }
+    </tbody>
+</table>
