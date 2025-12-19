@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InvestTrack.Model", "Invest
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InvestTrack.Web", "InvestTrack.Web\InvestTrack.Web.csproj", "{E83862FC-8D1D-48F8-8864-F7884C3DCA79}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InvestTrack.Mobile", "InvestTrack.Mobile\InvestTrack.Mobile.csproj", "{C69DF258-64EC-49A3-97F8-1844DA228010}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,11 @@ Global
 		{E83862FC-8D1D-48F8-8864-F7884C3DCA79}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E83862FC-8D1D-48F8-8864-F7884C3DCA79}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E83862FC-8D1D-48F8-8864-F7884C3DCA79}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C69DF258-64EC-49A3-97F8-1844DA228010}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C69DF258-64EC-49A3-97F8-1844DA228010}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C69DF258-64EC-49A3-97F8-1844DA228010}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{C69DF258-64EC-49A3-97F8-1844DA228010}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C69DF258-64EC-49A3-97F8-1844DA228010}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
