@@ -1,41 +1,97 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:contracts="clr-namespace:InvestTrack.Model.Contracts;assembly=InvestTrack.Model"
+    xmlns:vm="clr-namespace:InvestTrack.Mobile.ViewModels"
     x:Class="InvestTrack.Mobile.Views.SymbolsPage"
-    Title="Symbols">
+    Title="Markt Symbolen"
+    BackgroundColor="#0f172a">
 
-    <Grid Padding="16" RowDefinitions="Auto,Auto,Auto,*" RowSpacing="12">
+    <Grid Padding="20" RowDefinitions="Auto,Auto,Auto,*,Auto" RowSpacing="12">
 
-        <Label Grid.Row="0"
-               Text="Symbols via API"
-               FontSize="22"
-               FontAttributes="Bold"/>
+        <!-- Title, Subtitle & Admin Add Button -->
+        <Grid Grid.Row="0" ColumnDefinitions="*,Auto">
+            <VerticalStackLayout Grid.Column="0" Spacing="4" VerticalOptions="Center">
+                <Label Text="Markt Symbolen"
+                       FontSize="22"
+                       FontAttributes="Bold"
+                       TextColor="#f8fafc" />
+                <Label Text="Beschikbare valutaparen, grondstoffen en aandelen"
+                       FontSize="12"
+                       TextColor="#94a3b8" />
+            </VerticalStackLayout>
+            <!-- Add symbol button for Admin -->
+            <Button Grid.Column="1"
+                    Text="+ Nieuw Symbool"
+                    Command="{Binding AddSymbolCommand}"
+                    IsVisible="{Binding IsAdmin}"
+                    BackgroundColor="#3b82f6"
+                    TextColor="White"
+                    FontAttributes="Bold"
+                    FontSize="12"
+                    CornerRadius="8"
+                    HeightRequest="38"
+                    Padding="12,0"
+                    VerticalOptions="Center" />
+        </Grid>
 
-        <ActivityIndicator Grid.Row="1"
-                           x:Name="Loading"
-                           IsRunning="True"
-                           IsVisible="True"/>
+        <!-- Status Message (bv. offline melding) -->
+        <Label Grid.Row="1"
+               Text="{Binding StatusMessage}"
+               TextColor="#f59e0b"
+               FontSize="13"
+               IsVisible="{Binding StatusMessage, Converter={x:StaticResource StringToBoolConverter}}"
+               HorizontalOptions="Center" />
 
-        <Label Grid.Row="2"
-               x:Name="ErrorLabel"
-               TextColor="Tomato"
-               IsVisible="False" />
+        <!-- Loading Indicator -->
+        <ActivityIndicator Grid.Row="2"
+                           IsRunning="{Binding IsBusy}"
+                           IsVisible="{Binding IsBusy}"
+                           Color="#38bdf8"
+                           HorizontalOptions="Center" />
 
-        <!-- Deze pakt de rest van de ruimte en is scrollbaar -->
+        <!-- Symbols List -->
         <CollectionView Grid.Row="3"
-                        x:Name="SymbolsList">
+                        ItemsSource="{Binding Symbols}">
             <CollectionView.ItemTemplate>
                 <DataTemplate x:DataType="contracts:SymbolDto">
-                    <Grid Padding="10" ColumnDefinitions="110,*,120">
-                        <Label Text="{Binding Code}" FontAttributes="Bold" />
-                        <Label Grid.Column="1" Text="{Binding DisplayName}" />
-                        <Label Grid.Column="2" Text="{Binding Category}" HorizontalTextAlignment="End" />
-                    </Grid>
+                    <Frame BackgroundColor="#1e293b" BorderColor="#334155" CornerRadius="8" Padding="12" Margin="0,4">
+                        <Grid ColumnDefinitions="Auto,*,Auto,Auto" ColumnSpacing="10">
+                            <Label Grid.Column="0" Text="{Binding Code}" TextColor="#fbbf24" FontAttributes="Bold" FontSize="15" VerticalOptions="Center" WidthRequest="90" />
+                            <VerticalStackLayout Grid.Column="1" VerticalOptions="Center">
+                                <Label Text="{Binding DisplayName}" TextColor="#f8fafc" FontSize="13" FontAttributes="Bold" />
+                            </VerticalStackLayout>
+                            <Frame Grid.Column="2" BackgroundColor="#0f172a" BorderColor="#475569" CornerRadius="6" Padding="8,4" VerticalOptions="Center">
+                                <Label Text="{Binding Category}" TextColor="#38bdf8" FontSize="11" FontAttributes="Bold" />
+                            </Frame>
+                            <!-- Delete button for Admin -->
+                            <Button Grid.Column="3"
+                                    Text="Verwijderen"
+                                    FontSize="11"
+                                    CornerRadius="6"
+                                    HeightRequest="32"
+                                    Padding="8,0"
+                                    BackgroundColor="#450a0a"
+                                    TextColor="#f87171"
+                                    IsVisible="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.IsAdmin}"
+                                    Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.DeleteSymbolCommand}"
+                                    CommandParameter="{Binding Id}"
+                                    VerticalOptions="Center" />
+                        </Grid>
+                    </Frame>
                 </DataTemplate>
             </CollectionView.ItemTemplate>
         </CollectionView>
+
+        <!-- Refresh Button -->
+        <Button Grid.Row="4"
+                Text="🔄 Vernieuwen"
+                Command="{Binding RefreshCommand}"
+                BackgroundColor="#334155"
+                TextColor="#94a3b8"
+                CornerRadius="8"
+                HeightRequest="42" />
 
     </Grid>
 </ContentPage>

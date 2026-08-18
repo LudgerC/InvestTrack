@@ -1,0 +1,385 @@
+@model AdminDashboardViewModel
+@{
+    ViewData["Title"] = "Admin Dashboard";
+}
+
+<div class="container-fluid py-4">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 fw-bold text-gradient mb-1"><i class="bi bi-shield-lock me-2"></i>Admin Control Panel</h1>
+            <p class="text-muted small mb-0">Systeembeheer van gebruikers, accounts, trades en markt-symbolen.</p>
+        </div>
+        <div class="d-flex gap-2">
+            <button class="btn btn-primary btn-sm btn-gradient shadow-sm" data-bs-toggle="modal" data-bs-target="#createUserModal">
+                <i class="bi bi-person-plus-fill me-1"></i> Gebruiker Aanmaken
+            </button>
+            <button class="btn btn-outline-info btn-sm shadow-sm" data-bs-toggle="modal" data-bs-target="#addSymbolModal">
+                <i class="bi bi-plus-lg me-1"></i> Symbool Toevoegen
+            </button>
+        </div>
+    </div>
+
+    <!-- Alert Messages -->
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show shadow-sm mb-4" role="alert">
+            <i class="bi bi-check-circle-fill me-2"></i> @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show shadow-sm mb-4" role="alert">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i> @TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <!-- Stat Cards Overview -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-3">
+            <div class="card stat-card shadow-sm border-0 bg-dark text-light">
+                <div class="card-body d-flex align-items-center">
+                    <div class="stat-icon bg-primary bg-opacity-20 text-primary me-3">
+                        <i class="bi bi-people-fill fs-3"></i>
+                    </div>
+                    <div>
+                        <span class="text-muted small text-uppercase font-monospace">Gebruikers</span>
+                        <h3 class="mb-0 fw-bold">@Model.Users.Count</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card stat-card shadow-sm border-0 bg-dark text-light">
+                <div class="card-body d-flex align-items-center">
+                    <div class="stat-icon bg-success bg-opacity-20 text-success me-3">
+                        <i class="bi bi-wallet2 fs-3"></i>
+                    </div>
+                    <div>
+                        <span class="text-muted small text-uppercase font-monospace">Accounts</span>
+                        <h3 class="mb-0 fw-bold">@Model.Accounts.Count</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card stat-card shadow-sm border-0 bg-dark text-light">
+                <div class="card-body d-flex align-items-center">
+                    <div class="stat-icon bg-warning bg-opacity-20 text-warning me-3">
+                        <i class="bi bi-bar-chart-fill fs-3"></i>
+                    </div>
+                    <div>
+                        <span class="text-muted small text-uppercase font-monospace">Trades</span>
+                        <h3 class="mb-0 fw-bold">@Model.Trades.Count</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card stat-card shadow-sm border-0 bg-dark text-light">
+                <div class="card-body d-flex align-items-center">
+                    <div class="stat-icon bg-info bg-opacity-20 text-info me-3">
+                        <i class="bi bi-currency-exchange fs-3"></i>
+                    </div>
+                    <div>
+                        <span class="text-muted small text-uppercase font-monospace">Symbolen</span>
+                        <h3 class="mb-0 fw-bold">@Model.Symbols.Count</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <ul class="nav nav-pills custom-tabs mb-4" id="adminTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="users-tab" data-bs-toggle="pill" data-bs-target="#users-pane" type="button" role="tab">
+                <i class="bi bi-person-gear me-2"></i>Gebruikers (@Model.Users.Count)
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="admin-accounts-tab" data-bs-toggle="pill" data-bs-target="#admin-accounts-pane" type="button" role="tab">
+                <i class="bi bi-wallet2 me-2"></i>Accounts (@Model.Accounts.Count)
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="admin-trades-tab" data-bs-toggle="pill" data-bs-target="#admin-trades-pane" type="button" role="tab">
+                <i class="bi bi-graph-up me-2"></i>Trades (@Model.Trades.Count)
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="admin-symbols-tab" data-bs-toggle="pill" data-bs-target="#admin-symbols-pane" type="button" role="tab">
+                <i class="bi bi-tags me-2"></i>Symbolen (@Model.Symbols.Count)
+            </button>
+        </li>
+    </ul>
+
+    <!-- Tab Contents -->
+    <div class="tab-content" id="adminTabsContent">
+        <!-- 1. GEBRUIKERS TAB -->
+        <div class="tab-pane fade show active" id="users-pane" role="tabpanel">
+            <div class="card shadow-sm border-0 bg-dark text-light">
+                <div class="card-header bg-dark border-secondary d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0 card-title"><i class="bi bi-people me-2 text-primary"></i>Geregistreerde Gebruikers</h5>
+                    <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#createUserModal">
+                        <i class="bi bi-person-plus"></i> Gebruiker Toevoegen
+                    </button>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-dark table-hover mb-0 align-middle">
+                            <thead>
+                                <tr>
+                                    <th>Gebruikersnaam / E-mail</th>
+                                    <th>Naam</th>
+                                    <th>Rol</th>
+                                    <th class="text-end">Acties</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var user in Model.Users)
+                                {
+                                    <tr>
+                                        <td class="fw-bold">@user.Email</td>
+                                        <td>@user.FullName</td>
+                                        <td>
+                                            <span class="badge @(user.Role == "Admin" ? "bg-danger" : "bg-info text-dark")">
+                                                @user.Role
+                                            </span>
+                                        </td>
+                                        <td class="text-end">
+                                            <form asp-action="DeleteUser" method="post" class="d-inline" onsubmit="return confirm('Weet u zeker dat u gebruiker @user.Email wilt verwijderen?');">
+                                                <input type="hidden" name="userId" value="@user.Id" />
+                                                <button type="submit" class="btn btn-outline-danger btn-sm">
+                                                    <i class="bi bi-trash me-1"></i> Verwijderen
+                                                </button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. ACCOUNTS TAB -->
+        <div class="tab-pane fade" id="admin-accounts-pane" role="tabpanel">
+            <div class="card shadow-sm border-0 bg-dark text-light">
+                <div class="card-header bg-dark border-secondary">
+                    <h5 class="mb-0 card-title"><i class="bi bi-wallet2 me-2 text-success"></i>Alle Systeem Accounts</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-dark table-hover mb-0 align-middle">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Accountnaam</th>
+                                    <th>E-mail Eigenaar</th>
+                                    <th>Valuta</th>
+                                    <th>Saldo</th>
+                                    <th class="text-end">Acties</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var acc in Model.Accounts)
+                                {
+                                    <tr>
+                                        <td><span class="badge bg-secondary">#@acc.AccountId</span></td>
+                                        <td class="fw-bold">@acc.Name</td>
+                                        <td>@acc.UserEmail</td>
+                                        <td><span class="badge bg-info text-dark">@acc.Currency</span></td>
+                                        <td class="fw-bold text-success">€ @acc.Balance.ToString("N2")</td>
+                                        <td class="text-end">
+                                            <form asp-action="DeleteAccount" method="post" class="d-inline" onsubmit="return confirm('Weet u zeker dat u account @acc.Name wilt verwijderen (inclusief trades)?');">
+                                                <input type="hidden" name="accountId" value="@acc.AccountId" />
+                                                <button type="submit" class="btn btn-outline-danger btn-sm">
+                                                    <i class="bi bi-trash"></i> Verwijderen
+                                                </button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. TRADES TAB -->
+        <div class="tab-pane fade" id="admin-trades-pane" role="tabpanel">
+            <div class="card shadow-sm border-0 bg-dark text-light">
+                <div class="card-header bg-dark border-secondary">
+                    <h5 class="mb-0 card-title"><i class="bi bi-graph-up me-2 text-warning"></i>Alle Actieve Trades in Systeem</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-dark table-hover mb-0 align-middle">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Symbool</th>
+                                    <th>Lots</th>
+                                    <th>Winst / Verlies</th>
+                                    <th>Account</th>
+                                    <th class="text-end">Acties</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var trade in Model.Trades)
+                                {
+                                    <tr>
+                                        <td><span class="badge bg-secondary">#@trade.TradeId</span></td>
+                                        <td><span class="badge bg-primary">@trade.SymbolCode</span></td>
+                                        <td>@trade.Lots.ToString("N2")</td>
+                                        <td class="fw-bold @(trade.ProfitLoss >= 0 ? "text-success" : "text-danger")">
+                                            € @trade.ProfitLoss.ToString("N2")
+                                        </td>
+                                        <td>@trade.AccountName</td>
+                                        <td class="text-end">
+                                            <form asp-action="DeleteTrade" method="post" class="d-inline" onsubmit="return confirm('Weet u zeker dat u trade #@trade.TradeId wilt verwijderen?');">
+                                                <input type="hidden" name="tradeId" value="@trade.TradeId" />
+                                                <button type="submit" class="btn btn-outline-danger btn-sm">
+                                                    <i class="bi bi-trash"></i> Verwijderen
+                                                </button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4. SYMBOLEN TAB -->
+        <div class="tab-pane fade" id="admin-symbols-pane" role="tabpanel">
+            <div class="card shadow-sm border-0 bg-dark text-light">
+                <div class="card-header bg-dark border-secondary d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0 card-title"><i class="bi bi-tags me-2 text-info"></i>Markt Symbolen Beheren</h5>
+                    <button class="btn btn-info btn-sm text-dark fw-bold" data-bs-toggle="modal" data-bs-target="#addSymbolModal">
+                        <i class="bi bi-plus-circle"></i> Nieuw Symbool
+                    </button>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-dark table-hover mb-0 align-middle">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Code</th>
+                                    <th>Weergavenaam</th>
+                                    <th>Categorie</th>
+                                    <th class="text-end">Acties</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var sym in Model.Symbols)
+                                {
+                                    <tr>
+                                        <td><span class="badge bg-secondary">#@sym.Id</span></td>
+                                        <td class="fw-bold"><span class="badge bg-info text-dark">@sym.Code</span></td>
+                                        <td>@sym.DisplayName</td>
+                                        <td><span class="badge bg-secondary">@sym.Category</span></td>
+                                        <td class="text-end">
+                                            <form asp-action="DeleteSymbol" method="post" class="d-inline" onsubmit="return confirm('Weet u zeker dat u symbool @sym.Code wilt verwijderen?');">
+                                                <input type="hidden" name="symbolId" value="@sym.Id" />
+                                                <button type="submit" class="btn btn-outline-danger btn-sm">
+                                                    <i class="bi bi-trash"></i> Verwijderen
+                                                </button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ================= MODALS ================= -->
+
+<!-- Create User Modal -->
+<div class="modal fade" id="createUserModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content bg-dark text-light border-secondary">
+            <div class="modal-header border-secondary">
+                <h5 class="modal-title"><i class="bi bi-person-plus me-2 text-primary"></i>Nieuwe Gebruiker Aanmaken</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form asp-action="CreateUser" method="post">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">E-mailadres</label>
+                        <input type="email" name="email" class="form-control bg-secondary text-light border-0" placeholder="nieuwe.gebruiker@investtrack.local" required />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Volledige Naam</label>
+                        <input type="text" name="fullName" class="form-control bg-secondary text-light border-0" placeholder="Jan Jansen" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Wachtwoord</label>
+                        <input type="password" name="password" class="form-control bg-secondary text-light border-0" placeholder="••••••••" required />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Rol</label>
+                        <select name="role" class="form-select bg-secondary text-light border-0">
+                            <option value="Trader">Trader</option>
+                            <option value="Admin">Admin</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer border-secondary">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Annuleren</button>
+                    <button type="submit" class="btn btn-primary btn-gradient">Gebruiker Opslaan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Add Symbol Modal -->
+<div class="modal fade" id="addSymbolModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content bg-dark text-light border-secondary">
+            <div class="modal-header border-secondary">
+                <h5 class="modal-title"><i class="bi bi-tags me-2 text-info"></i>Nieuw Symbool Toevoegen</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form asp-action="AddSymbol" method="post">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Symbool Code (bv. XAUUSD, BTCUSD)</label>
+                        <input type="text" name="code" class="form-control bg-secondary text-light border-0" placeholder="XAUUSD" required />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Weergavenaam (bv. Goud / Dollar)</label>
+                        <input type="text" name="displayName" class="form-control bg-secondary text-light border-0" placeholder="Goud" required />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Categorie</label>
+                        <select name="category" class="form-select bg-secondary text-light border-0">
+                            <option value="Forex">Forex</option>
+                            <option value="Metals">Metals</option>
+                            <option value="Crypto">Crypto</option>
+                            <option value="Index">Index</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer border-secondary">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Annuleren</button>
+                    <button type="submit" class="btn btn-info text-dark font-bold">Symbool Opslaan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

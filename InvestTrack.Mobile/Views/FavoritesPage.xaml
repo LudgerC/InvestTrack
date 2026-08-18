@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:vm="clr-namespace:InvestTrack.Mobile.ViewModels"
+    x:Class="InvestTrack.Mobile.Views.FavoritesPage"
+    Title="Favorieten"
+    BackgroundColor="#0f172a">
+
+    <Grid RowDefinitions="Auto,Auto,Auto,*,Auto" Padding="20" RowSpacing="12">
+
+        <!-- Header -->
+        <VerticalStackLayout Grid.Row="0" Spacing="4">
+            <Label Text="⭐ Favoriete Trades"
+                   FontSize="22" FontAttributes="Bold" TextColor="#f8fafc" />
+            <Label Text="Uw geselecteerde favoriete trades op één plek"
+                   FontSize="12" TextColor="#94a3b8" />
+        </VerticalStackLayout>
+
+        <!-- Loading -->
+        <ActivityIndicator Grid.Row="1"
+                           IsRunning="{Binding IsBusy}"
+                           IsVisible="{Binding IsBusy}"
+                           Color="#fbbf24"
+                           HorizontalOptions="Center" />
+
+        <!-- Status / empty state message -->
+        <Label Grid.Row="2"
+               Text="{Binding StatusMessage}"
+               TextColor="#f59e0b"
+               FontSize="13"
+               IsVisible="{Binding StatusMessage, Converter={x:StaticResource StringToBoolConverter}}"
+               HorizontalOptions="Center"
+               HorizontalTextAlignment="Center" />
+
+        <!-- Favorites List -->
+        <CollectionView Grid.Row="3" ItemsSource="{Binding Favorites}">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Frame BackgroundColor="#1e293b" BorderColor="#fbbf24" CornerRadius="10" Padding="14" Margin="0,5">
+                        <VerticalStackLayout Spacing="10">
+                            <!-- Trade info -->
+                            <Grid ColumnDefinitions="Auto,*,Auto">
+                                <!-- Star icon -->
+                                <Label Grid.Column="0" Text="⭐" FontSize="20" VerticalOptions="Center" Margin="0,0,10,0" />
+                                <!-- Symbol + account -->
+                                <VerticalStackLayout Grid.Column="1" VerticalOptions="Center">
+                                    <Label Text="{Binding SymbolCode}" TextColor="#fbbf24" FontAttributes="Bold" FontSize="16" />
+                                    <Label Text="{Binding SymbolName}" TextColor="#94a3b8" FontSize="11" />
+                                    <Label Text="{Binding AccountName}" TextColor="#64748b" FontSize="11" />
+                                </VerticalStackLayout>
+                                <!-- P/L + Lots -->
+                                <VerticalStackLayout Grid.Column="2" HorizontalOptions="End" VerticalOptions="Center">
+                                    <Label Text="{Binding ProfitLoss, StringFormat='€ {0:N2}'}"
+                                           TextColor="#38bdf8" FontAttributes="Bold" FontSize="15"
+                                           HorizontalOptions="End" />
+                                    <Label Text="{Binding Lots, StringFormat='{0:N2} Lots'}"
+                                           TextColor="#94a3b8" FontSize="11"
+                                           HorizontalOptions="End" />
+                                </VerticalStackLayout>
+                            </Grid>
+
+                            <!-- Remove button -->
+                            <Button Text="★ Verwijder uit Favorieten"
+                                    FontSize="12" CornerRadius="6"
+                                    BackgroundColor="#78350f" TextColor="#fbbf24"
+                                    Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.RemoveFavoriteCommand}"
+                                    CommandParameter="{Binding TradeId}" />
+                        </VerticalStackLayout>
+                    </Frame>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+        <!-- Refresh button -->
+        <Button Grid.Row="4"
+                Text="🔄 Vernieuwen"
+                Command="{Binding RefreshCommand}"
+                BackgroundColor="#334155" TextColor="#94a3b8"
+                CornerRadius="8" HeightRequest="42" />
+
+    </Grid>
+</ContentPage>

@@ -5,8 +5,22 @@
     xmlns:views="clr-namespace:InvestTrack.Mobile.Views"
     x:Class="InvestTrack.Mobile.AppShell">
 
-    <ShellContent
-        Title="Symbols"
-        ContentTemplate="{DataTemplate views:SymbolsPage}" />
+    <TabBar x:Name="MainTabBar">
+        <Tab x:Name="AccountTab" Title="Account" Icon="dotnet_bot.png">
+            <ShellContent Title="Account" ContentTemplate="{DataTemplate views:LoginPage}" Route="LoginPage" />
+        </Tab>
+        <Tab x:Name="TraderTab" Title="Trader" Icon="dotnet_bot.png">
+            <ShellContent Title="Trader" ContentTemplate="{DataTemplate views:TraderDashboardPage}" Route="TraderDashboardPage" />
+        </Tab>
+        <Tab x:Name="FavoritesTab" Title="Favorieten" Icon="dotnet_bot.png">
+            <ShellContent Title="Favorieten" ContentTemplate="{DataTemplate views:FavoritesPage}" Route="FavoritesPage" />
+        </Tab>
+        <Tab x:Name="SymbolsTab" Title="Symbolen" Icon="dotnet_bot.png">
+            <ShellContent Title="Symbolen" ContentTemplate="{DataTemplate views:SymbolsPage}" Route="SymbolsPage" />
+        </Tab>
+        <Tab x:Name="AdminTab" Title="Admin" Icon="dotnet_bot.png">
+            <ShellContent Title="Admin" ContentTemplate="{DataTemplate views:AdminDashboardPage}" Route="AdminDashboardPage" />
+        </Tab>
+    </TabBar>
 
 </Shell>

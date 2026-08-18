@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:InvestTrack.Mobile.ViewModels"
+             xmlns:api="clr-namespace:InvestTrack.Mobile.Services"
+             x:Class="InvestTrack.Mobile.Views.AdminDashboardPage"
+             Title="Admin Dashboard"
+             BackgroundColor="#0f172a">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="16">
+
+            <!-- Header with Logout -->
+            <Grid ColumnDefinitions="*,Auto">
+                <VerticalStackLayout Grid.Column="0">
+                    <Label Text="Admin Beheer" TextColor="#f8fafc" FontSize="22" FontAttributes="Bold" />
+                    <Label Text="Systeem- en gebruikersoverzicht" TextColor="#94a3b8" FontSize="12" />
+                </VerticalStackLayout>
+                <Button Grid.Column="1" Text="Uitloggen"
+                        Command="{Binding LogoutCommand}"
+                        BackgroundColor="#7f1d1d" TextColor="#fca5a5"
+                        FontSize="12" CornerRadius="6" HeightRequest="36" Padding="12,0" VerticalOptions="Center" />
+            </Grid>
+
+            <!-- Status bericht (offline modus) -->
+            <Label Text="{Binding StatusMessage}"
+                   TextColor="#f59e0b"
+                   FontSize="13"
+                   IsVisible="{Binding StatusMessage, Converter={x:StaticResource StringToBoolConverter}}"
+                   HorizontalOptions="Center" />
+
+            <!-- Stats Overview Cards -->
+            <Grid ColumnDefinitions="*,*,*,*" ColumnSpacing="8">
+                <Frame Grid.Column="0" BackgroundColor="#1e293b" BorderColor="#334155" CornerRadius="8" Padding="10">
+                    <VerticalStackLayout HorizontalOptions="Center">
+                        <Label Text="Users" TextColor="#94a3b8" FontSize="11" HorizontalOptions="Center" />
+                        <Label Text="{Binding TotalUsersCount}" TextColor="#38bdf8" FontSize="18" FontAttributes="Bold" HorizontalOptions="Center" />
+                    </VerticalStackLayout>
+                </Frame>
+                <Frame Grid.Column="1" BackgroundColor="#1e293b" BorderColor="#334155" CornerRadius="8" Padding="10">
+                    <VerticalStackLayout HorizontalOptions="Center">
+                        <Label Text="Accounts" TextColor="#94a3b8" FontSize="11" HorizontalOptions="Center" />
+                        <Label Text="{Binding TotalAccountsCount}" TextColor="#4ade80" FontSize="18" FontAttributes="Bold" HorizontalOptions="Center" />
+                    </VerticalStackLayout>
+                </Frame>
+                <Frame Grid.Column="2" BackgroundColor="#1e293b" BorderColor="#334155" CornerRadius="8" Padding="10">
+                    <VerticalStackLayout HorizontalOptions="Center">
+                        <Label Text="Trades" TextColor="#94a3b8" FontSize="11" HorizontalOptions="Center" />
+                        <Label Text="{Binding TotalTradesCount}" TextColor="#f43f5e" FontSize="18" FontAttributes="Bold" HorizontalOptions="Center" />
+                    </VerticalStackLayout>
+                </Frame>
+                <Frame Grid.Column="3" BackgroundColor="#1e293b" BorderColor="#334155" CornerRadius="8" Padding="10">
+                    <VerticalStackLayout HorizontalOptions="Center">
+                        <Label Text="Symbols" TextColor="#94a3b8" FontSize="11" HorizontalOptions="Center" />
+                        <Label Text="{Binding TotalSymbolsCount}" TextColor="#fbbf24" FontSize="18" FontAttributes="Bold" HorizontalOptions="Center" />
+                    </VerticalStackLayout>
+                </Frame>
+            </Grid>
+
+            <!-- Quick Action Buttons -->
+            <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                <Button Grid.Column="0" Text="+ Nieuwe Gebruiker"
+                        Command="{Binding CreateUserCommand}"
+                        BackgroundColor="#3b82f6" TextColor="White"
+                        CornerRadius="8" FontAttributes="Bold" FontSize="13" />
+                <Button Grid.Column="1" Text="+ Nieuw Symbool"
+                        Command="{Binding AddSymbolCommand}"
+                        BackgroundColor="#8b5cf6" TextColor="White"
+                        CornerRadius="8" FontAttributes="Bold" FontSize="13" />
+            </Grid>
+
+            <!-- USERS SECTION -->
+            <Label Text="Gebruikers" TextColor="#f8fafc" FontSize="18" FontAttributes="Bold" Margin="0,8,0,0" />
+            <CollectionView ItemsSource="{Binding Users}">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="api:ApiService+AdminUserItem">
+                        <Frame BackgroundColor="#1e293b" BorderColor="#334155" CornerRadius="8" Padding="12" Margin="0,4">
+                            <Grid ColumnDefinitions="*,Auto">
+                                <VerticalStackLayout Grid.Column="0" Spacing="2">
+                                    <Label Text="{Binding Email}" TextColor="#f8fafc" FontAttributes="Bold" />
+                                    <Label Text="{Binding Role, StringFormat='Rol: {0}'}" TextColor="#38bdf8" FontSize="12" />
+                                    <Label Text="{Binding FullName, StringFormat='Naam: {0}'}" TextColor="#94a3b8" FontSize="11" />
+                                </VerticalStackLayout>
+                                <Button Grid.Column="1" Text="Verwijderen"
+                                        FontSize="11" CornerRadius="6"
+                                        BackgroundColor="#450a0a" TextColor="#f87171"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.DeleteUserCommand}"
+                                        CommandParameter="{Binding Id}"
+                                        VerticalOptions="Center" HeightRequest="32" Padding="8,0" />
+                            </Grid>
+                        </Frame>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+            <!-- ACCOUNTS SECTION -->
+            <Label Text="Accounts van gebruikers" TextColor="#f8fafc" FontSize="18" FontAttributes="Bold" Margin="0,8,0,0" />
+            <CollectionView ItemsSource="{Binding Accounts}">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="api:ApiService+AdminAccountItem">
+                        <Frame BackgroundColor="#1e293b" BorderColor="#334155" CornerRadius="8" Padding="12" Margin="0,4">
+                            <Grid ColumnDefinitions="*,Auto">
+                                <VerticalStackLayout Grid.Column="0" Spacing="2">
+                                    <Label Text="{Binding Name}" TextColor="#f8fafc" FontAttributes="Bold" />
+                                    <Label Text="{Binding UserEmail, StringFormat='Eigenaar: {0}'}" TextColor="#94a3b8" FontSize="12" />
+                                    <Label Text="{Binding Balance, StringFormat='Saldo: € {0:N2}'}" TextColor="#4ade80" FontSize="12" FontAttributes="Bold" />
+                                </VerticalStackLayout>
+                                <Button Grid.Column="1" Text="Verwijderen"
+                                        FontSize="11" CornerRadius="6"
+                                        BackgroundColor="#450a0a" TextColor="#f87171"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.DeleteAccountCommand}"
+                                        CommandParameter="{Binding AccountId}"
+                                        VerticalOptions="Center" HeightRequest="32" Padding="8,0" />
+                            </Grid>
+                        </Frame>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+            <!-- TRADES SECTION -->
+            <Label Text="Recente Trades" TextColor="#f8fafc" FontSize="18" FontAttributes="Bold" Margin="0,8,0,0" />
+            <CollectionView ItemsSource="{Binding Trades}">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="api:ApiService+AdminTradeItem">
+                        <Frame BackgroundColor="#1e293b" BorderColor="#334155" CornerRadius="8" Padding="12" Margin="0,4">
+                            <Grid ColumnDefinitions="*,Auto">
+                                <VerticalStackLayout Grid.Column="0" Spacing="2">
+                                    <Label Text="{Binding SymbolCode}" TextColor="#818cf8" FontAttributes="Bold" />
+                                    <Label Text="{Binding AccountName, StringFormat='Account: {0}'}" TextColor="#94a3b8" FontSize="12" />
+                                    <Label Text="{Binding ProfitLoss, StringFormat='P/L: € {0:N2}'}" TextColor="#38bdf8" FontSize="12" FontAttributes="Bold" />
+                                </VerticalStackLayout>
+                                <Button Grid.Column="1" Text="Verwijderen"
+                                        FontSize="11" CornerRadius="6"
+                                        BackgroundColor="#450a0a" TextColor="#f87171"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.DeleteTradeCommand}"
+                                        CommandParameter="{Binding TradeId}"
+                                        VerticalOptions="Center" HeightRequest="32" Padding="8,0" />
+                            </Grid>
+                        </Frame>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+            <!-- SYMBOLS SECTION -->
+            <Label Text="Beheer Symbolen" TextColor="#f8fafc" FontSize="18" FontAttributes="Bold" Margin="0,8,0,0" />
+            <CollectionView ItemsSource="{Binding Symbols}">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="api:ApiService+SymbolDto">
+                        <Frame BackgroundColor="#1e293b" BorderColor="#334155" CornerRadius="8" Padding="12" Margin="0,4">
+                            <Grid ColumnDefinitions="*,Auto">
+                                <VerticalStackLayout Grid.Column="0" Spacing="2">
+                                    <Label Text="{Binding Code}" TextColor="#fbbf24" FontAttributes="Bold" />
+                                    <Label Text="{Binding DisplayName}" TextColor="#f8fafc" FontSize="12" />
+                                    <Label Text="{Binding Category, StringFormat='Categorie: {0}'}" TextColor="#94a3b8" FontSize="11" />
+                                </VerticalStackLayout>
+                                <Button Grid.Column="1" Text="Verwijderen"
+                                        FontSize="11" CornerRadius="6"
+                                        BackgroundColor="#450a0a" TextColor="#f87171"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.DeleteSymbolCommand}"
+                                        CommandParameter="{Binding SymbolId}"
+                                        VerticalOptions="Center" HeightRequest="32" Padding="8,0" />
+                            </Grid>
+                        </Frame>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+            <!-- Refresh button -->
+            <Button Text="🔄 Vernieuwen"
+                    Command="{Binding RefreshCommand}"
+                    BackgroundColor="#334155" TextColor="#94a3b8"
+                    CornerRadius="8" Margin="0,8" />
+
+            <!-- Loading indicator -->
+            <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" Color="#3b82f6" />
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

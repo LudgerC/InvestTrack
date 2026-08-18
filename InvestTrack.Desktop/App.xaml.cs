@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Windows;
 using InvestTrack.Model.Data;
 using InvestTrack.Model.Identity;
@@ -15,6 +15,8 @@ namespace InvestTrack.Desktop
 
         protected override async void OnStartup(StartupEventArgs e)
         {
+            ShutdownMode = ShutdownMode.OnExplicitShutdown;
+
             var services = new ServiceCollection();
 
             // === Config laden ===
@@ -23,7 +25,22 @@ namespace InvestTrack.Desktop
                 .AddUserSecrets<App>()
                 .Build();
 
-            string connectionString = config["ConnectionStrings:DefaultConnection"] ?? "Data Source=investtrack.db";
+            string connectionString = config["ConnectionStrings:DefaultConnection"] ?? "Data Source=../Data/investtrack.db";
+
+            // Ensure directory exists for SQLite database path
+            try
+            {
+                var sqliteBuilder = new Microsoft.Data.Sqlite.SqliteConnectionStringBuilder(connectionString);
+                if (!string.IsNullOrEmpty(sqliteBuilder.DataSource))
+                {
+                    var dir = System.IO.Path.GetDirectoryName(System.IO.Path.GetFullPath(sqliteBuilder.DataSource));
+                    if (!string.IsNullOrEmpty(dir) && !System.IO.Directory.Exists(dir))
+                    {
+                        System.IO.Directory.CreateDirectory(dir);
+                    }
+                }
+            }
+            catch { }
 
             // === Database setup ===
             services.AddDbContext<InvestTrackDbContext>(options =>
@@ -103,6 +120,7 @@ namespace InvestTrack.Desktop
             var signInManager = rootScope.ServiceProvider.GetRequiredService<SignInManager<ApplicationUser>>();
             var globalUserManager = rootScope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
 
+            ShutdownMode = ShutdownMode.OnLastWindowClose;
             var login = new Views.Auth.LoginWindow(signInManager, globalUserManager);
             login.Show();
 

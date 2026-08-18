@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:InvestTrack.Mobile.ViewModels"
+             x:Class="InvestTrack.Mobile.Views.LoginPage"
+             Title="InvestTrack Account"
+             Shell.TabBarIsVisible="False"
+             BackgroundColor="#0f172a">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="24" Spacing="20" VerticalOptions="Center">
+
+            <!-- Logo & Title -->
+            <VerticalStackLayout Spacing="8" HorizontalOptions="Center">
+                <Image Source="dotnet_bot.png" HeightRequest="70" HorizontalOptions="Center" />
+                <Label Text="InvestTrack Mobile"
+                       FontSize="24"
+                       FontAttributes="Bold"
+                       TextColor="#818cf8"
+                       HorizontalOptions="Center" />
+                <Label Text="Uw beleggings- en handelsportaal"
+                       FontSize="13"
+                       TextColor="#94a3b8"
+                       HorizontalOptions="Center" />
+            </VerticalStackLayout>
+
+            <!-- Ingelogd Status Card (wanneer al ingelogd) -->
+            <Frame BackgroundColor="#1e293b" BorderColor="#22c55e" CornerRadius="12" Padding="20"
+                   IsVisible="{Binding IsLoggedIn}">
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="✅ U bent momenteel ingelogd" TextColor="#4ade80" FontSize="16" FontAttributes="Bold" HorizontalOptions="Center" />
+
+                    <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto" RowSpacing="6">
+                        <Label Grid.Row="0" Grid.Column="0" Text="E-mail: " TextColor="#94a3b8" FontAttributes="Bold" />
+                        <Label Grid.Row="0" Grid.Column="1" Text="{Binding LoggedInEmail}" TextColor="#f8fafc" />
+
+                        <Label Grid.Row="1" Grid.Column="0" Text="Rol: " TextColor="#94a3b8" FontAttributes="Bold" />
+                        <Label Grid.Row="1" Grid.Column="1" Text="{Binding LoggedInRole}" TextColor="#38bdf8" FontAttributes="Bold" />
+                    </Grid>
+
+                    <Button Text="Naar Dashboard"
+                            Command="{Binding GoToDashboardCommand}"
+                            BackgroundColor="#6366f1"
+                            TextColor="White"
+                            FontAttributes="Bold"
+                            CornerRadius="8"
+                            HeightRequest="44"
+                            Margin="0,8,0,0" />
+
+                    <Button Text="Uitloggen"
+                            Command="{Binding LogoutCommand}"
+                            BackgroundColor="#dc2626"
+                            TextColor="White"
+                            FontAttributes="Bold"
+                            CornerRadius="8"
+                            HeightRequest="44" />
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- Formulieren (Zichtbaar wanneer NIET ingelogd) -->
+            <VerticalStackLayout Spacing="16" IsVisible="{Binding IsLoggedIn, Converter={StaticResource InverseBoolConverter}}">
+
+                <!-- Tab Toggle: Inloggen vs Registreren -->
+                <Grid ColumnDefinitions="*,*" BackgroundColor="#1e293b" Padding="4" HeightRequest="44">
+                    <Button Grid.Column="0" Text="Inloggen"
+                            Command="{Binding SwitchToLoginCommand}"
+                            BackgroundColor="{Binding IsLoginMode, Converter={x:StaticResource StringToBoolConverter}}"
+                            TextColor="{Binding IsLoginMode, Converter={x:StaticResource StringToBoolConverter}}"
+                            FontAttributes="Bold" CornerRadius="6" FontSize="13" />
+                    <Button Grid.Column="1" Text="Registreren"
+                            Command="{Binding SwitchToRegisterCommand}"
+                            BackgroundColor="{Binding IsRegisterMode, Converter={x:StaticResource StringToBoolConverter}}"
+                            TextColor="{Binding IsRegisterMode, Converter={x:StaticResource StringToBoolConverter}}"
+                            FontAttributes="Bold" CornerRadius="6" FontSize="13" />
+                </Grid>
+
+                <Frame BackgroundColor="#1e293b" BorderColor="#334155" CornerRadius="12" Padding="20">
+                    <VerticalStackLayout Spacing="14">
+
+                        <!-- INLOGGEN FORMULIER -->
+                        <VerticalStackLayout Spacing="12" IsVisible="{Binding IsLoginMode}">
+                            <Label Text="E-mailadres" TextColor="#f8fafc" FontAttributes="Bold" FontSize="13" />
+                            <Entry Text="{Binding Email}"
+                                   Placeholder="bijv. trader@investtrack.local"
+                                   Keyboard="Email"
+                                   TextColor="#f8fafc"
+                                   PlaceholderColor="#64748b"
+                                   BackgroundColor="#0f172a" />
+
+                            <Label Text="Wachtwoord" TextColor="#f8fafc" FontAttributes="Bold" FontSize="13" />
+                            <Entry Text="{Binding Password}"
+                                   IsPassword="True"
+                                   Placeholder="••••••••"
+                                   TextColor="#f8fafc"
+                                   PlaceholderColor="#64748b"
+                                   BackgroundColor="#0f172a" />
+
+                            <Button Text="Inloggen"
+                                    Command="{Binding LoginCommand}"
+                                    BackgroundColor="#6366f1"
+                                    TextColor="White"
+                                    FontAttributes="Bold"
+                                    CornerRadius="8"
+                                    HeightRequest="46"
+                                    Margin="0,6,0,0" />
+                        </VerticalStackLayout>
+
+                        <!-- REGISTREREN FORMULIER -->
+                        <VerticalStackLayout Spacing="12" IsVisible="{Binding IsRegisterMode}">
+                            <Label Text="Volledige Naam" TextColor="#f8fafc" FontAttributes="Bold" FontSize="13" />
+                            <Entry Text="{Binding FullName}"
+                                   Placeholder="bijv. Jan Jansen"
+                                   TextColor="#f8fafc"
+                                   PlaceholderColor="#64748b"
+                                   BackgroundColor="#0f172a" />
+
+                            <Label Text="E-mailadres" TextColor="#f8fafc" FontAttributes="Bold" FontSize="13" />
+                            <Entry Text="{Binding Email}"
+                                   Placeholder="bijv. trader@investtrack.local"
+                                   Keyboard="Email"
+                                   TextColor="#f8fafc"
+                                   PlaceholderColor="#64748b"
+                                   BackgroundColor="#0f172a" />
+
+                            <Label Text="Wachtwoord" TextColor="#f8fafc" FontAttributes="Bold" FontSize="13" />
+                            <Entry Text="{Binding Password}"
+                                   IsPassword="True"
+                                   Placeholder="Minimaal 6 tekens"
+                                   TextColor="#f8fafc"
+                                   PlaceholderColor="#64748b"
+                                   BackgroundColor="#0f172a" />
+
+                            <Label Text="Bevestig Wachtwoord" TextColor="#f8fafc" FontAttributes="Bold" FontSize="13" />
+                            <Entry Text="{Binding ConfirmPassword}"
+                                   IsPassword="True"
+                                   Placeholder="••••••••"
+                                   TextColor="#f8fafc"
+                                   PlaceholderColor="#64748b"
+                                   BackgroundColor="#0f172a" />
+
+                            <Button Text="Account Aanmaken"
+                                    Command="{Binding RegisterCommand}"
+                                    BackgroundColor="#10b981"
+                                    TextColor="White"
+                                    FontAttributes="Bold"
+                                    CornerRadius="8"
+                                    HeightRequest="46"
+                                    Margin="0,6,0,0" />
+                        </VerticalStackLayout>
+
+                        <!-- Foutmelding -->
+                        <Label Text="{Binding ErrorMessage}"
+                               TextColor="#ef4444"
+                               FontSize="13"
+                               HorizontalOptions="Center"
+                               IsVisible="{Binding HasError}" />
+
+                        <!-- Succesmelding -->
+                        <Label Text="{Binding SuccessMessage}"
+                               TextColor="#10b981"
+                               FontSize="13"
+                               HorizontalOptions="Center"
+                               IsVisible="{Binding HasSuccess}" />
+
+                    </VerticalStackLayout>
+                </Frame>
+            </VerticalStackLayout>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

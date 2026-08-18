@@ -1,53 +1,45 @@
-﻿using System.Net.Http.Json;
-using System.Runtime.CompilerServices;
-using InvestTrack.Model.Contracts;
+using System;
+using InvestTrack.Mobile.Services;
+using InvestTrack.Mobile.ViewModels;
+using Microsoft.Maui.Controls;
 
 namespace InvestTrack.Mobile.Views;
 
 public partial class SymbolsPage : ContentPage
 {
-    private readonly HttpClient _http;
+    private readonly SymbolsViewModel _viewModel;
 
-    public SymbolsPage()
+    public SymbolsPage() : this(CreateDefaultViewModel())
+    {
+    }
+
+    public SymbolsPage(SymbolsViewModel viewModel)
     {
         InitializeComponent();
+        _viewModel = viewModel ?? CreateDefaultViewModel();
+        BindingContext = _viewModel;
+    }
 
-        
-        _http = new HttpClient
-        {
-            BaseAddress = new Uri("https://localhost:7027/") 
-        };
+    private static SymbolsViewModel CreateDefaultViewModel()
+    {
+        return IPlatformApplication.Current?.Services?.GetService<SymbolsViewModel>()
+            ?? new SymbolsViewModel(new ApiService());
     }
 
     protected override async void OnAppearing()
     {
         base.OnAppearing();
-        await LoadAsync();
-    }
-
-    private async Task LoadAsync()
-    {
         try
         {
-            ErrorLabel.IsVisible = false;
-            Loading.IsVisible = true;
-            Loading.IsRunning = true;
-
-            var items = await _http.GetFromJsonAsync<List<SymbolDto>>("api/symbols")
-            ?? new List<SymbolDto>();
-
-            SymbolsList.ItemsSource = items;
-
+            _viewModel?.RefreshRole();
+            if (_viewModel != null)
+            {
+                await _viewModel.LoadAsync();
+            }
         }
         catch (Exception ex)
         {
-            ErrorLabel.Text = ex.Message ?? "Onbekende fout.";
-            ErrorLabel.IsVisible = true;
-        }
-        finally
-        {
-            Loading.IsRunning = false;
-            Loading.IsVisible = false;
+            System.Diagnostics.Debug.WriteLine($"[SymbolsPage OnAppearing] Error: {ex}");
         }
     }
 }

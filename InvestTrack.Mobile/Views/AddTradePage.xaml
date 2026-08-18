@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="InvestTrack.Mobile.Views.AddTradePage"
+             Title="Nieuwe Trade"
+             BackgroundColor="#0f172a">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="24" Spacing="16">
+
+            <Label Text="Nieuwe Trade Toevoegen"
+                   TextColor="#f8fafc" FontSize="22" FontAttributes="Bold"
+                   HorizontalOptions="Center" />
+
+            <!-- Account Picker -->
+            <Label Text="Account:" TextColor="#94a3b8" FontSize="14" />
+            <Picker x:Name="AccountPicker"
+                    Title="Selecteer een account"
+                    ItemDisplayBinding="{Binding Name}"
+                    BackgroundColor="#1e293b"
+                    TextColor="#f8fafc" />
+
+            <!-- Symbol Picker -->
+            <Label Text="Symbool:" TextColor="#94a3b8" FontSize="14" />
+            <Picker x:Name="SymbolPicker"
+                    Title="Selecteer een symbool"
+                    ItemDisplayBinding="{Binding DisplayName}"
+                    BackgroundColor="#1e293b"
+                    TextColor="#f8fafc" />
+
+            <!-- Lots -->
+            <Label Text="Lots:" TextColor="#94a3b8" FontSize="14" />
+            <Entry x:Name="LotsEntry"
+                   Placeholder="bijv. 0.01"
+                   Keyboard="Numeric"
+                   BackgroundColor="#1e293b"
+                   TextColor="#f8fafc"
+                   PlaceholderColor="#475569" />
+
+            <!-- Profit/Loss -->
+            <Label Text="Winst / Verlies (€):" TextColor="#94a3b8" FontSize="14" />
+            <Entry x:Name="ProfitLossEntry"
+                   Placeholder="bijv. 50.00 of -25.00"
+                   Keyboard="Numeric"
+                   BackgroundColor="#1e293b"
+                   TextColor="#f8fafc"
+                   PlaceholderColor="#475569" />
+
+            <!-- Error message -->
+            <Label x:Name="ErrorLabel"
+                   TextColor="#f87171"
+                   FontSize="13"
+                   IsVisible="False"
+                   HorizontalOptions="Center" />
+
+            <!-- Save button -->
+            <Button Text="Trade Opslaan"
+                    x:Name="SaveButton"
+                    Clicked="OnSaveClicked"
+                    BackgroundColor="#8b5cf6"
+                    TextColor="White"
+                    CornerRadius="10"
+                    FontAttributes="Bold"
+                    FontSize="16"
+                    Margin="0,8" />
+
+            <!-- Cancel button -->
+            <Button Text="Annuleren"
+                    Clicked="OnCancelClicked"
+                    BackgroundColor="#334155"
+                    TextColor="#94a3b8"
+                    CornerRadius="10"
+                    FontSize="14" />
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

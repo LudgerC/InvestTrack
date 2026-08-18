@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="InvestTrack.Mobile.Views.TraderDashboardPage"
+             Title="Trader Dashboard"
+             BackgroundColor="#0f172a">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="16">
+
+            <!-- Top Header with Logout -->
+            <Grid ColumnDefinitions="*,Auto" Margin="0,0,0,4">
+                <Label Text="Trader Dashboard" TextColor="#f8fafc" FontSize="22" FontAttributes="Bold" VerticalOptions="Center" />
+                <Button Grid.Column="1" Text="Uitloggen"
+                        Command="{Binding LogoutCommand}"
+                        BackgroundColor="#7f1d1d" TextColor="#fca5a5"
+                        FontSize="12" CornerRadius="6" HeightRequest="36" Padding="12,0" />
+            </Grid>
+
+            <!-- Status bericht (offline modus) -->
+            <Label Text="{Binding StatusMessage}"
+                   TextColor="#f59e0b"
+                   FontSize="13"
+                   IsVisible="{Binding StatusMessage, Converter={x:StaticResource StringToBoolConverter}}"
+                   HorizontalOptions="Center" />
+
+            <!-- Summary Stats Card -->
+            <Frame BackgroundColor="#1e293b" BorderColor="#334155" CornerRadius="12" Padding="20">
+                <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto">
+                    <VerticalStackLayout Grid.Column="0" Grid.Row="0">
+                        <Label Text="Totaal Saldo" TextColor="#94a3b8" FontSize="12" />
+                        <Label Text="{Binding TotalBalance, StringFormat='€ {0:N2}'}" TextColor="#4ade80" FontSize="22" FontAttributes="Bold" />
+                    </VerticalStackLayout>
+                    <VerticalStackLayout Grid.Column="1" Grid.Row="0">
+                        <Label Text="Totaal P/L" TextColor="#94a3b8" FontSize="12" />
+                        <Label Text="{Binding TotalProfitLoss, StringFormat='€ {0:N2}'}" TextColor="#38bdf8" FontSize="22" FontAttributes="Bold" />
+                    </VerticalStackLayout>
+                </Grid>
+            </Frame>
+
+            <!-- Action buttons -->
+            <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                <Button Grid.Column="0" Text="+ Nieuw Account"
+                        Command="{Binding AddAccountCommand}"
+                        BackgroundColor="#3b82f6" TextColor="White"
+                        CornerRadius="8" FontAttributes="Bold" FontSize="13" />
+                <Button Grid.Column="1" Text="+ Nieuwe Trade"
+                        Command="{Binding AddTradeCommand}"
+                        BackgroundColor="#8b5cf6" TextColor="White"
+                        CornerRadius="8" FontAttributes="Bold" FontSize="13" />
+            </Grid>
+
+            <!-- Accounts Section -->
+            <Label Text="Uw Accounts" TextColor="#f8fafc" FontSize="18" FontAttributes="Bold" />
+            <CollectionView ItemsSource="{Binding Accounts}">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Frame BackgroundColor="#1e293b" BorderColor="#334155" CornerRadius="8" Padding="12" Margin="0,4">
+                            <VerticalStackLayout Spacing="8">
+                                <Grid ColumnDefinitions="*,Auto">
+                                    <VerticalStackLayout Grid.Column="0">
+                                        <Label Text="{Binding Name}" TextColor="#f8fafc" FontAttributes="Bold" />
+                                        <Label Text="{Binding Currency}" TextColor="#94a3b8" FontSize="12" />
+                                    </VerticalStackLayout>
+                                    <Label Grid.Column="1" Text="{Binding Balance, StringFormat='€ {0:N2}'}" TextColor="#4ade80" FontAttributes="Bold" VerticalOptions="Center" />
+                                </Grid>
+                                <!-- Deposit / Withdraw buttons per account -->
+                                <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
+                                    <Button Grid.Column="0" Text="+ Storting"
+                                            FontSize="12" CornerRadius="6"
+                                            BackgroundColor="#064e3b" TextColor="#4ade80"
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.DepositCommand}"
+                                            CommandParameter="{Binding AccountId}" />
+                                    <Button Grid.Column="1" Text="- Opname"
+                                            FontSize="12" CornerRadius="6"
+                                            BackgroundColor="#450a0a" TextColor="#f87171"
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.WithdrawCommand}"
+                                            CommandParameter="{Binding AccountId}" />
+                                </Grid>
+                            </VerticalStackLayout>
+                        </Frame>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+            <!-- Trades Section -->
+            <Label Text="Actieve Trades" TextColor="#f8fafc" FontSize="18" FontAttributes="Bold" />
+            <CollectionView ItemsSource="{Binding Trades}">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Frame BackgroundColor="#1e293b" CornerRadius="8" Padding="12" Margin="0,4">
+                            <Frame.Triggers>
+                                <DataTrigger TargetType="Frame" Binding="{Binding IsFavorite}" Value="True">
+                                    <Setter Property="BorderColor" Value="#fbbf24" />
+                                </DataTrigger>
+                                <DataTrigger TargetType="Frame" Binding="{Binding IsFavorite}" Value="False">
+                                    <Setter Property="BorderColor" Value="#334155" />
+                                </DataTrigger>
+                            </Frame.Triggers>
+                            <VerticalStackLayout Spacing="8">
+                                <Grid ColumnDefinitions="*,Auto">
+                                    <VerticalStackLayout Grid.Column="0">
+                                        <!-- Symbol + favorite badge -->
+                                        <StackLayout Orientation="Horizontal" Spacing="6">
+                                            <Label Text="{Binding SymbolCode}" TextColor="#818cf8" FontAttributes="Bold" VerticalOptions="Center" />
+                                            <Label Text="⭐" FontSize="14" IsVisible="{Binding IsFavorite}" VerticalOptions="Center" />
+                                        </StackLayout>
+                                        <Label Text="{Binding AccountName}" TextColor="#94a3b8" FontSize="12" />
+                                    </VerticalStackLayout>
+                                    <VerticalStackLayout Grid.Column="1" HorizontalOptions="End">
+                                        <Label Text="{Binding ProfitLoss, StringFormat='€ {0:N2}'}" TextColor="#38bdf8" FontAttributes="Bold" HorizontalOptions="End" />
+                                        <Label Text="{Binding Lots, StringFormat='{0:N2} Lots'}" TextColor="#94a3b8" FontSize="12" HorizontalOptions="End" />
+                                    </VerticalStackLayout>
+                                </Grid>
+                                <!-- Trade action buttons -->
+                                <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
+                                    <Button Grid.Column="0"
+                                            FontSize="12" CornerRadius="6"
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.ToggleFavoriteCommand}"
+                                            CommandParameter="{Binding TradeId}">
+                                        <Button.Triggers>
+                                            <DataTrigger TargetType="Button" Binding="{Binding IsFavorite}" Value="True">
+                                                <Setter Property="Text" Value="★ Verwijder uit Favorieten" />
+                                                <Setter Property="BackgroundColor" Value="#78350f" />
+                                                <Setter Property="TextColor" Value="#fbbf24" />
+                                            </DataTrigger>
+                                            <DataTrigger TargetType="Button" Binding="{Binding IsFavorite}" Value="False">
+                                                <Setter Property="Text" Value="☆ Voeg toe aan Favorieten" />
+                                                <Setter Property="BackgroundColor" Value="#1c1917" />
+                                                <Setter Property="TextColor" Value="#d1d5db" />
+                                            </DataTrigger>
+                                        </Button.Triggers>
+                                    </Button>
+                                    <Button Grid.Column="1" Text="Verwijderen"
+                                            FontSize="12" CornerRadius="6"
+                                            BackgroundColor="#450a0a" TextColor="#f87171"
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.DeleteTradeCommand}"
+                                            CommandParameter="{Binding TradeId}" />
+                                </Grid>
+                            </VerticalStackLayout>
+                        </Frame>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+            <!-- Refresh button -->
+            <Button Text="🔄 Vernieuwen"
+                    Command="{Binding RefreshCommand}"
+                    BackgroundColor="#334155" TextColor="#94a3b8"
+                    CornerRadius="8" Margin="0,8" />
+
+            <!-- Loading indicator -->
+            <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" Color="#3b82f6" />
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

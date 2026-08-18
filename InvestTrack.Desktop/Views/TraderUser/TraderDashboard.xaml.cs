@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Windows;
 using InvestTrack.Model.Data;
@@ -17,17 +17,8 @@ namespace InvestTrack.Desktop.Views.TraderUser
         {
             InitializeComponent();
             _userId = userId;
-            _context = CreateDbContext();
+            _context = App.ServiceProvider.GetRequiredService<InvestTrackDbContext>();
             LoadData();
-        }
-
-        private static InvestTrackDbContext CreateDbContext()
-        {
-            var options = new DbContextOptionsBuilder<InvestTrackDbContext>()
-                .UseSqlite("Data Source=investtrack.db")
-                .Options;
-
-            return new InvestTrackDbContext(options);
         }
 
         private void LoadData()

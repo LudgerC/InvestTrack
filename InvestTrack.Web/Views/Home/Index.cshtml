@@ -1,8 +1,80 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+@{
+    ViewData["Title"] = "Welkom bij InvestTrack";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="py-5">
+    <div class="text-center mb-5">
+        <div class="d-inline-flex align-items-center justify-content-center bg-primary text-white rounded-circle mb-3" style="width: 72px; height: 72px; font-size: 32px;">
+            <i class="bi bi-graph-up-arrow"></i>
+        </div>
+        <h1 class="display-4 fw-bold text-dark mb-3">Welkom bij InvestTrack</h1>
+        <p class="lead text-muted mx-auto" style="max-width: 650px;">
+            Hét alles-in-één platform voor het realtime beheren en opvolgen van uw handelsaccounts, investeringsportfolio en marktposities.
+        </p>
+        <div class="mt-4 d-flex justify-content-center gap-3">
+            @if (User.Identity != null && User.Identity.IsAuthenticated)
+            {
+                if (User.IsInRole("Admin"))
+                {
+                    <a asp-controller="Admin" asp-action="Index" class="btn btn-primary btn-lg px-4 shadow-sm">
+                        <i class="bi bi-speedometer2 me-2"></i>Naar Admin Beheer
+                    </a>
+                }
+                else
+                {
+                    <a asp-controller="Trader" asp-action="Index" class="btn btn-primary btn-lg px-4 shadow-sm">
+                        <i class="bi bi-person-workspace me-2"></i>Mijn Dashboard
+                    </a>
+                }
+            }
+            else
+            {
+                <a asp-controller="Account" asp-action="Login" class="btn btn-primary btn-lg px-4 shadow-sm">
+                    <i class="bi bi-box-arrow-in-right me-2"></i>Inloggen
+                </a>
+                <a asp-controller="Account" asp-action="Register" class="btn btn-outline-secondary btn-lg px-4 shadow-sm">
+                    <i class="bi bi-person-plus me-2"></i>Account Aanmaken
+                </a>
+            }
+        </div>
+    </div>
+
+    <!-- Feature Cards -->
+    <div class="row g-4 mt-2">
+        <div class="col-md-4">
+            <div class="card h-100 border-0 shadow-sm rounded-4 p-4 text-center">
+                <div class="text-primary mb-3" style="font-size: 40px;">
+                    <i class="bi bi-wallet2"></i>
+                </div>
+                <h4 class="fw-bold mb-2">Account- & Saldobeheer</h4>
+                <p class="text-muted">
+                    Maak meerdere handelsaccounts aan in verschillende valuta's en beheer eenvoudig stortingen en opnames.
+                </p>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card h-100 border-0 shadow-sm rounded-4 p-4 text-center">
+                <div class="text-success mb-3" style="font-size: 40px;">
+                    <i class="bi bi-activity"></i>
+                </div>
+                <h4 class="fw-bold mb-2">Realtime Posities & Trades</h4>
+                <p class="text-muted">
+                    Voer orders in, volg winst en verlies (P/L) op en markeer favoriete posities voor directe inzichten.
+                </p>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card h-100 border-0 shadow-sm rounded-4 p-4 text-center">
+                <div class="text-info mb-3" style="font-size: 40px;">
+                    <i class="bi bi-phone"></i>
+                </div>
+                <h4 class="fw-bold mb-2">Multi-Platform & Offline</h4>
+                <p class="text-muted">
+                    Volledige integratie over Web, Desktop en Mobile met automatische offline synchronisatie en lokale caching.
+                </p>
+            </div>
+        </div>
+    </div>
 </div>

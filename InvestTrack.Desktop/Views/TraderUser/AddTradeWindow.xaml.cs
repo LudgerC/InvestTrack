@@ -1,10 +1,11 @@
-﻿using System;
+using System;
 using System.Globalization;
 using System.Linq;
 using System.Windows;
 using InvestTrack.Model.Data;
 using InvestTrack.Model.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace InvestTrack.Desktop.Views.TraderUser
 {
@@ -17,11 +18,7 @@ namespace InvestTrack.Desktop.Views.TraderUser
         {
             InitializeComponent();
 
-            var options = new DbContextOptionsBuilder<InvestTrackDbContext>()
-                .UseSqlite("Data Source=investtrack.db")
-                .Options;
-
-            _context = new InvestTrackDbContext(options);
+            _context = App.ServiceProvider.GetRequiredService<InvestTrackDbContext>();
 
             // Accounts van gebruiker laden
             AccountBox.ItemsSource = _context.Accounts

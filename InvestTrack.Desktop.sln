@@ -10,6 +10,9 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InvestTrack.Web", "InvestTrack.Web\InvestTrack.Web.csproj", "{E83862FC-8D1D-48F8-8864-F7884C3DCA79}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InvestTrack.Mobile", "InvestTrack.Mobile\InvestTrack.Mobile.csproj", "{C69DF258-64EC-49A3-97F8-1844DA228010}"
+	ProjectSection(ProjectDependencies) = postProject
+		{E83862FC-8D1D-48F8-8864-F7884C3DCA79} = {E83862FC-8D1D-48F8-8864-F7884C3DCA79}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
