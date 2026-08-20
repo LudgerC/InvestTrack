@@ -1,5 +1,10 @@
+@inject InvestTrack.Web.Services.LanguageService Lang
+@using Microsoft.AspNetCore.Localization
+
 @{
-    ViewData["Title"] = "Welkom bij InvestTrack";
+    var requestCulture = Context.Features.Get<IRequestCultureFeature>();
+    var currentCulture = requestCulture?.RequestCulture.Culture.Name ?? "nl-BE";
+    ViewData["Title"] = Lang.Get("Welcome", currentCulture);
 }
 
 <div class="py-5">
@@ -7,9 +12,9 @@
         <div class="d-inline-flex align-items-center justify-content-center bg-primary text-white rounded-circle mb-3" style="width: 72px; height: 72px; font-size: 32px;">
             <i class="bi bi-graph-up-arrow"></i>
         </div>
-        <h1 class="display-4 fw-bold text-dark mb-3">Welkom bij InvestTrack</h1>
+        <h1 class="display-4 fw-bold text-light mb-3">@Lang.Get("Welcome", currentCulture)</h1>
         <p class="lead text-muted mx-auto" style="max-width: 650px;">
-            Hét alles-in-één platform voor het realtime beheren en opvolgen van uw handelsaccounts, investeringsportfolio en marktposities.
+            @Lang.Get("Tagline", currentCulture)
         </p>
         <div class="mt-4 d-flex justify-content-center gap-3">
             @if (User.Identity != null && User.Identity.IsAuthenticated)
@@ -17,23 +22,23 @@
                 if (User.IsInRole("Admin"))
                 {
                     <a asp-controller="Admin" asp-action="Index" class="btn btn-primary btn-lg px-4 shadow-sm">
-                        <i class="bi bi-speedometer2 me-2"></i>Naar Admin Beheer
+                        <i class="bi bi-speedometer2 me-2"></i>@Lang.Get("GoToAdmin", currentCulture)
                     </a>
                 }
                 else
                 {
                     <a asp-controller="Trader" asp-action="Index" class="btn btn-primary btn-lg px-4 shadow-sm">
-                        <i class="bi bi-person-workspace me-2"></i>Mijn Dashboard
+                        <i class="bi bi-person-workspace me-2"></i>@Lang.Get("MyDashboard", currentCulture)
                     </a>
                 }
             }
             else
             {
                 <a asp-controller="Account" asp-action="Login" class="btn btn-primary btn-lg px-4 shadow-sm">
-                    <i class="bi bi-box-arrow-in-right me-2"></i>Inloggen
+                    <i class="bi bi-box-arrow-in-right me-2"></i>@Lang.Get("Login", currentCulture)
                 </a>
-                <a asp-controller="Account" asp-action="Register" class="btn btn-outline-secondary btn-lg px-4 shadow-sm">
-                    <i class="bi bi-person-plus me-2"></i>Account Aanmaken
+                <a asp-controller="Account" asp-action="Register" class="btn btn-outline-secondary btn-lg px-4 shadow-sm text-light">
+                    <i class="bi bi-person-plus me-2"></i>@Lang.Get("CreateAccount", currentCulture)
                 </a>
             }
         </div>
@@ -42,37 +47,37 @@
     <!-- Feature Cards -->
     <div class="row g-4 mt-2">
         <div class="col-md-4">
-            <div class="card h-100 border-0 shadow-sm rounded-4 p-4 text-center">
+            <div class="card h-100 border-secondary bg-dark text-light shadow-sm rounded-4 p-4 text-center">
                 <div class="text-primary mb-3" style="font-size: 40px;">
                     <i class="bi bi-wallet2"></i>
                 </div>
-                <h4 class="fw-bold mb-2">Account- & Saldobeheer</h4>
+                <h4 class="fw-bold mb-2">@Lang.Get("Feature1Title", currentCulture)</h4>
                 <p class="text-muted">
-                    Maak meerdere handelsaccounts aan in verschillende valuta's en beheer eenvoudig stortingen en opnames.
+                    @Lang.Get("Feature1Desc", currentCulture)
                 </p>
             </div>
         </div>
 
         <div class="col-md-4">
-            <div class="card h-100 border-0 shadow-sm rounded-4 p-4 text-center">
+            <div class="card h-100 border-secondary bg-dark text-light shadow-sm rounded-4 p-4 text-center">
                 <div class="text-success mb-3" style="font-size: 40px;">
                     <i class="bi bi-activity"></i>
                 </div>
-                <h4 class="fw-bold mb-2">Realtime Posities & Trades</h4>
+                <h4 class="fw-bold mb-2">@Lang.Get("Feature2Title", currentCulture)</h4>
                 <p class="text-muted">
-                    Voer orders in, volg winst en verlies (P/L) op en markeer favoriete posities voor directe inzichten.
+                    @Lang.Get("Feature2Desc", currentCulture)
                 </p>
             </div>
         </div>
 
         <div class="col-md-4">
-            <div class="card h-100 border-0 shadow-sm rounded-4 p-4 text-center">
+            <div class="card h-100 border-secondary bg-dark text-light shadow-sm rounded-4 p-4 text-center">
                 <div class="text-info mb-3" style="font-size: 40px;">
                     <i class="bi bi-phone"></i>
                 </div>
-                <h4 class="fw-bold mb-2">Multi-Platform & Offline</h4>
+                <h4 class="fw-bold mb-2">@Lang.Get("Feature3Title", currentCulture)</h4>
                 <p class="text-muted">
-                    Volledige integratie over Web, Desktop en Mobile met automatische offline synchronisatie en lokale caching.
+                    @Lang.Get("Feature3Desc", currentCulture)
                 </p>
             </div>
         </div>

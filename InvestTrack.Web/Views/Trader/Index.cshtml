@@ -1,21 +1,26 @@
 @model TraderDashboardViewModel
+@inject InvestTrack.Web.Services.LanguageService Lang
+@using Microsoft.AspNetCore.Localization
+
 @{
-    ViewData["Title"] = "Trader Dashboard";
+    var requestCulture = Context.Features.Get<IRequestCultureFeature>();
+    var currentCulture = requestCulture?.RequestCulture.Culture.Name ?? "nl-BE";
+    ViewData["Title"] = Lang.Get("TraderDashboard", currentCulture);
 }
 
 <div class="container-fluid py-4">
     <!-- Header Section -->
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
-            <h1 class="h3 fw-bold text-gradient mb-1">Trader Dashboard</h1>
-            <p class="text-muted small mb-0">Beheer uw beleggingsaccounts, trades en transacties in één overzicht.</p>
+            <h1 class="h3 fw-bold text-gradient mb-1">@Lang.Get("TraderDashboard", currentCulture)</h1>
+            <p class="text-muted small mb-0">InvestTrack Trading & Portfolio Management</p>
         </div>
         <div class="d-flex gap-2">
             <button class="btn btn-primary btn-sm btn-gradient shadow-sm" data-bs-toggle="modal" data-bs-target="#addAccountModal">
-                <i class="bi bi-wallet-plus me-1"></i> Account Toevoegen
+                <i class="bi bi-wallet-plus me-1"></i> @Lang.Get("NewAccount", currentCulture)
             </button>
             <button class="btn btn-success btn-sm shadow-sm" data-bs-toggle="modal" data-bs-target="#addTradeModal">
-                <i class="bi bi-plus-circle me-1"></i> Trade Toevoegen
+                <i class="bi bi-plus-circle me-1"></i> @Lang.Get("NewTrade", currentCulture)
             </button>
         </div>
     </div>
@@ -45,7 +50,7 @@
                         <i class="bi bi-cash-stack fs-3"></i>
                     </div>
                     <div>
-                        <span class="text-muted small text-uppercase font-monospace">Totaal Saldo</span>
+                        <span class="text-muted small text-uppercase font-monospace">@Lang.Get("TotalBalance", currentCulture)</span>
                         <h3 class="mb-0 fw-bold">€ @Model.TotalBalance.ToString("N2")</h3>
                     </div>
                 </div>
@@ -58,7 +63,7 @@
                         <i class="bi @(Model.TotalProfitLoss >= 0 ? "bi-graph-up-arrow" : "bi-graph-down-arrow") fs-3"></i>
                     </div>
                     <div>
-                        <span class="text-muted small text-uppercase font-monospace">Totaal Winst / Verlies</span>
+                        <span class="text-muted small text-uppercase font-monospace">@Lang.Get("TotalPL", currentCulture)</span>
                         <h3 class="mb-0 fw-bold @(Model.TotalProfitLoss >= 0 ? "text-success" : "text-danger")">
                             € @Model.TotalProfitLoss.ToString("N2")
                         </h3>
@@ -73,7 +78,7 @@
                         <i class="bi bi-bar-chart-fill fs-3"></i>
                     </div>
                     <div>
-                        <span class="text-muted small text-uppercase font-monospace">Actieve Trades</span>
+                        <span class="text-muted small text-uppercase font-monospace">@Lang.Get("TotalTrades", currentCulture)</span>
                         <h3 class="mb-0 fw-bold">@Model.TotalTradesCount</h3>
                     </div>
                 </div>
@@ -441,18 +446,19 @@
                 <h5 class="modal-title"><i class="bi bi-box-arrow-in-down me-2 text-success"></i>Geld Storten (Deposit)</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form asp-action="DepositTransaction" method="post">
+            <form id="depositForm">
                 <input type="hidden" name="accountId" id="depositAccountId" />
                 <div class="modal-body">
                     <p class="text-muted small">Account: <strong id="depositAccountName" class="text-light"></strong></p>
                     <div class="mb-3">
                         <label class="form-label">Stortingsbedrag (€)</label>
-                        <input type="number" step="0.01" name="amount" class="form-control bg-secondary text-light border-0" placeholder="100.00" required />
+                        <input type="number" step="0.01" name="amount" id="depositAmount" class="form-control bg-secondary text-light border-0" placeholder="100.00" required />
                     </div>
+                    <div id="depositAlert" class="alert alert-info d-none py-2 small"></div>
                 </div>
                 <div class="modal-footer border-secondary">
                     <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Annuleren</button>
-                    <button type="submit" class="btn btn-success">Storten</button>
+                    <button type="submit" class="btn btn-success"><i class="bi bi-box-arrow-in-down me-1"></i> Storten (via AJAX)</button>
                 </div>
             </form>
         </div>
@@ -467,18 +473,19 @@
                 <h5 class="modal-title"><i class="bi bi-box-arrow-up me-2 text-danger"></i>Geld Opnemen (Withdrawal)</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form asp-action="WithdrawTransaction" method="post">
+            <form id="withdrawForm">
                 <input type="hidden" name="accountId" id="withdrawAccountId" />
                 <div class="modal-body">
                     <p class="text-muted small">Account: <strong id="withdrawAccountName" class="text-light"></strong></p>
                     <div class="mb-3">
                         <label class="form-label">Opnamebedrag (€)</label>
-                        <input type="number" step="0.01" name="amount" class="form-control bg-secondary text-light border-0" placeholder="50.00" required />
+                        <input type="number" step="0.01" name="amount" id="withdrawAmount" class="form-control bg-secondary text-light border-0" placeholder="50.00" required />
                     </div>
+                    <div id="withdrawAlert" class="alert alert-info d-none py-2 small"></div>
                 </div>
                 <div class="modal-footer border-secondary">
                     <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Annuleren</button>
-                    <button type="submit" class="btn btn-danger">Opnemen</button>
+                    <button type="submit" class="btn btn-danger"><i class="bi bi-box-arrow-up me-1"></i> Opnemen (via AJAX)</button>
                 </div>
             </form>
         </div>
@@ -494,6 +501,7 @@
                     var button = event.relatedTarget;
                     document.getElementById('depositAccountId').value = button.getAttribute('data-account-id');
                     document.getElementById('depositAccountName').textContent = button.getAttribute('data-account-name');
+                    document.getElementById('depositAlert').classList.add('d-none');
                 });
             }
 
@@ -503,8 +511,73 @@
                     var button = event.relatedTarget;
                     document.getElementById('withdrawAccountId').value = button.getAttribute('data-account-id');
                     document.getElementById('withdrawAccountName').textContent = button.getAttribute('data-account-name');
+                    document.getElementById('withdrawAlert').classList.add('d-none');
                 });
             }
+
+            // AJAX Submit for Deposit Form
+            document.getElementById('depositForm').addEventListener('submit', function (e) {
+                e.preventDefault();
+                var accountId = document.getElementById('depositAccountId').value;
+                var amount = document.getElementById('depositAmount').value;
+                var alertBox = document.getElementById('depositAlert');
+
+                var formData = new FormData();
+                formData.append('accountId', accountId);
+                formData.append('amount', amount);
+
+                fetch('/Trader/DepositAjax', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(r => r.json())
+                .then(data => {
+                    alertBox.classList.remove('d-none', 'alert-danger', 'alert-success');
+                    if (data.success) {
+                        alertBox.classList.add('alert-success');
+                        alertBox.textContent = data.message;
+                        setTimeout(() => {
+                            location.reload();
+                        }, 1000);
+                    } else {
+                        alertBox.classList.add('alert-danger');
+                        alertBox.textContent = data.message;
+                    }
+                })
+                .catch(err => console.error('AJAX Deposit Error:', err));
+            });
+
+            // AJAX Submit for Withdraw Form
+            document.getElementById('withdrawForm').addEventListener('submit', function (e) {
+                e.preventDefault();
+                var accountId = document.getElementById('withdrawAccountId').value;
+                var amount = document.getElementById('withdrawAmount').value;
+                var alertBox = document.getElementById('withdrawAlert');
+
+                var formData = new FormData();
+                formData.append('accountId', accountId);
+                formData.append('amount', amount);
+
+                fetch('/Trader/WithdrawAjax', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(r => r.json())
+                .then(data => {
+                    alertBox.classList.remove('d-none', 'alert-danger', 'alert-success');
+                    if (data.success) {
+                        alertBox.classList.add('alert-success');
+                        alertBox.textContent = data.message;
+                        setTimeout(() => {
+                            location.reload();
+                        }, 1000);
+                    } else {
+                        alertBox.classList.add('alert-danger');
+                        alertBox.textContent = data.message;
+                    }
+                })
+                .catch(err => console.error('AJAX Withdraw Error:', err));
+            });
         });
     </script>
 }

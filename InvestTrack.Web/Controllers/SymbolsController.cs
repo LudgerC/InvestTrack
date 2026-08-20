@@ -1,4 +1,4 @@
-﻿using InvestTrack.Model.Data;
+using InvestTrack.Model.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -20,7 +20,34 @@ namespace InvestTrack.Web.Controllers
                 .OrderBy(s => s.Code)
                 .ToListAsync();
 
+            var categories = await _db.Symbols
+                .Select(s => s.Category)
+                .Distinct()
+                .ToListAsync();
+
+            ViewBag.Categories = categories;
             return View(symbols);
+        }
+
+        // GET: /Symbols/FilterJson?category=xxx
+        [HttpGet]
+        public async Task<IActionResult> FilterJson(string? category)
+        {
+            var query = _db.Symbols.AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(category) && category != "ALL")
+            {
+                query = query.Where(s => s.Category == category);
+            }
+
+            var symbols = await query.OrderBy(s => s.Code).Select(s => new {
+                s.Id,
+                s.Code,
+                s.DisplayName,
+                s.Category
+            }).ToListAsync();
+
+            return Json(symbols);
         }
     }
 }

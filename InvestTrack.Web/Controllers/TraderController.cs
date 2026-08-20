@@ -264,6 +264,75 @@ namespace InvestTrack.Web.Controllers
         }
 
         [HttpPost]
+        public async Task<IActionResult> DepositAjax(int accountId, decimal amount, string? note)
+        {
+            var userId = GetCurrentUserId();
+            var account = await _context.Accounts.FirstOrDefaultAsync(a => a.AccountId == accountId && a.UserId == userId);
+
+            if (account == null || amount <= 0)
+            {
+                return Json(new { success = false, message = "Ongeldig account of bedrag." });
+            }
+
+            var transaction = new Transaction
+            {
+                AccountId = accountId,
+                Amount = amount,
+                Type = "Deposit",
+                Note = note,
+                CreatedAt = DateTime.UtcNow
+            };
+
+            _context.Transactions.Add(transaction);
+            account.Balance += amount;
+            await _context.SaveChangesAsync();
+
+            return Json(new { 
+                success = true, 
+                newBalance = account.Balance, 
+                formattedBalance = account.Balance.ToString("N2"),
+                message = $"Storting van €{amount:N2} succesvol verwerkt!" 
+            });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> WithdrawAjax(int accountId, decimal amount, string? note)
+        {
+            var userId = GetCurrentUserId();
+            var account = await _context.Accounts.FirstOrDefaultAsync(a => a.AccountId == accountId && a.UserId == userId);
+
+            if (account == null || amount <= 0)
+            {
+                return Json(new { success = false, message = "Ongeldig account of bedrag." });
+            }
+
+            if (account.Balance - amount < 0)
+            {
+                return Json(new { success = false, message = "Onvoldoende saldo voor deze opname." });
+            }
+
+            var transaction = new Transaction
+            {
+                AccountId = accountId,
+                Amount = -amount,
+                Type = "Withdrawal",
+                Note = note,
+                CreatedAt = DateTime.UtcNow
+            };
+
+            _context.Transactions.Add(transaction);
+            account.Balance -= amount;
+            await _context.SaveChangesAsync();
+
+            return Json(new { 
+                success = true, 
+                newBalance = account.Balance, 
+                formattedBalance = account.Balance.ToString("N2"),
+                message = $"Opname van €{amount:N2} succesvol verwerkt!" 
+            });
+        }
+
+        [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ToggleFavorite(int tradeId)
         {

@@ -45,6 +45,17 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.AccessDeniedPath = "/Account/AccessDenied";
 });
 
+// === Localization & Services ===
+builder.Services.AddSingleton<InvestTrack.Web.Services.LanguageService>();
+builder.Services.AddLocalization();
+builder.Services.Configure<Microsoft.AspNetCore.Builder.RequestLocalizationOptions>(options =>
+{
+    var supportedCultures = new[] { "nl-BE", "fr-BE", "en-US", "nl", "fr", "en" };
+    options.SetDefaultCulture("nl-BE")
+           .AddSupportedCultures(supportedCultures)
+           .AddSupportedUICultures(supportedCultures);
+});
+
 // === MVC & API Controllers ===
 builder.Services.AddControllersWithViews()
     .AddJsonOptions(options =>
@@ -53,6 +64,8 @@ builder.Services.AddControllersWithViews()
     });
 
 var app = builder.Build();
+
+app.UseRequestLocalization(app.Services.GetRequiredService<Microsoft.Extensions.Options.IOptions<Microsoft.AspNetCore.Builder.RequestLocalizationOptions>>().Value);
 
 // === Database Migration & Seeding ===
 using (var scope = app.Services.CreateScope())
