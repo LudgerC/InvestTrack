@@ -135,8 +135,8 @@ De standaard `ApplicationUser` werd uitgebreid met onder andere:
 
 Er worden twee rollen gebruikt:
 
-* `Admin`
-* `Trader`
+* **Admin**
+* **Trader**
 
 Nieuwe gebruikers krijgen standaard de rol **Trader**. Admin-gebruikers kunnen gebruikers bekijken, aanmaken met een bepaalde rol en verwijderen.
 
@@ -195,9 +195,19 @@ De middleware wordt in de juiste volgorde uitgevoerd zodat authenticatie en auto
 
 ### Selectieveld en AJAX
 
-Op de Symbolen-pagina wordt een `<select>` gebruikt om symbolen op basis van hun categorie te filteren, bijvoorbeeld Forex, Metals, Crypto en Index.
+AJAX wordt in de Web-applicatie op twee pagina's gebruikt via de JavaScript `fetch` API.
 
-De filtering gebeurt dynamisch via AJAX, zodat de pagina niet volledig opnieuw geladen hoeft te worden.
+**Trader/Index**
+
+* Voor het **storten** wordt een AJAX-request verstuurd naar `/Trader/DepositAjax`.
+* Voor het **opnemen** wordt een AJAX-request verstuurd naar `/Trader/WithdrawAjax`.
+* Hierdoor kunnen stortingen en opnames worden uitgevoerd zonder de volledige pagina opnieuw te laden.
+
+**Symbols/Index**
+
+* Op de Symbolen-pagina wordt een `<select>` gebruikt om op categorie te filteren.
+* De geselecteerde categorie wordt via AJAX naar `/Symbols/FilterJson` gestuurd.
+* De resultaten worden vervolgens dynamisch op de pagina weergegeven zonder een volledige reload.
 
 ---
 
@@ -327,7 +337,7 @@ Er wordt onder andere gebruikgemaakt van:
 * `Frame`-kaarten
 * XAML layouts
 
-De applicatie wordt getest met een Android emulator vanaf ongeveer **API 33**.
+De applicatie wordt getest met een Android emulator vanaf **API 33**.
 
 ### Programmeercultuur
 
